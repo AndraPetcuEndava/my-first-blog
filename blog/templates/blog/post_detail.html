@@ -1,37 +1,44 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-    <article class="post">
-        <!-- Section for action buttons (Publish, Edit, Delete) -->
-        <aside class="actions">
+<article class="post post-detail-flex">
+    <!-- Main section for the post text and title -->
+    <div class="post-content">
+        <h2>{{ post.title }}</h2>
+         <!-- Post body text -->
+        <p>{{ post.text|linebreaksbr }}</p>
+    </div>
+    <!-- Side column with actions (Edit/Delete) and the publish date -->
+    <div class="actions-date-vertical">
+        <div class="actions-icons">
             {% if user.is_authenticated %}
                 {% if not post.published_date %}
-                <!-- If the post is not published yet (a draft), show the Publish button -->
                     <form method="post" action="{% url 'post_publish' pk=post.pk %}" style="display:inline;">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-secondary">Publish</button>
+                        <button type="submit" class="btn btn-secondary" title="Publish">
+                            {% include './icons/file-earmark-plus.svg' %}
+                        </button>
                     </form>
                 {% endif %}
-                <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}">
+                 <!-- Edit button -->
+                <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}" title="Edit">
                     {% include './icons/pencil-fill.svg' %}
                 </a>
-                <!-- Delete button: sends a POST request to delete the post -->
+                <!-- Delete button -->
                 <form method="post" action="{% url 'post_remove' pk=post.pk %}" style="display:inline;">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-secondary">
+                    <button type="submit" class="btn btn-secondary" title="Delete">
                         {% include './icons/trash-fill.svg' %}
                     </button>
                 </form>
             {% endif %}
-        </aside>
-        <!-- If the post has been published, display the date -->
+        </div>
+         <!-- Displaying the published date -->
         {% if post.published_date %}
             <time class="date">
                 {{ post.published_date }}
             </time>
         {% endif %}
-
-        <h2>{{ post.title }}</h2>
-        <p>{{ post.text|linebreaksbr }}</p>
-    </article>
+    </div>
+</article>
 {% endblock %}

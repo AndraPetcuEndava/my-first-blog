@@ -8,7 +8,7 @@ body {
 }
 
 .page-header {
-    background-color: #ee7824;
+    background-color: #f68528;
     margin-top: 0;
     margin-bottom: 40px;
     padding: 20px 20px 20px 40px;
@@ -51,7 +51,7 @@ h4 {
 .top-menu:visited {
     color: #ffffff;
     float: right;
-    font-size: 26pt;
+    font-size: 40pt;
     margin-right: 20px;
 }
 
@@ -64,26 +64,131 @@ h4 {
 .post h2 a,
 .post h2 a:visited {
     color: #000000;
+    text-decoration: none;
+    font-family: 'Lobster', cursive;
 }
+
+.post h2 a:hover {
+    color: #C25100;
+    text-decoration: underline;
+}
+
+.post h1 a,
+.post h1 a:visited {
+    color: #000000;
+    text-decoration: none;
+}
+
+.post h1 a:hover {
+    color: #C25100;
+    text-decoration: underline;
+}
+
 
 .post > .date,
 .post > .actions {
     display: flex;
-    gap: 1px; /* Reduced from 20px to 4px */
+    gap: 1px;
     align-items: center;
 }
 
 /* Secondary buttons (Publish, Delete, etc.) */
-.btn-secondary,
-.btn-secondary:visited {
-    color: #C25100;
-    background: none;
-    border-color: #C25100;
-    margin-left: 2px;
+.btn-secondary {
+    background-color: #6c757d; /* gri */
+    color: #fff;
+    border: 1px solid #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    color: #fff;
 }
 
 /* Hover effect for buttons */
 .btn-secondary:hover {
     color: #FFFFFF;
     background-color: #C25100;
+}
+
+.actions-right {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-bottom: 8px;
+    width: 100%;
+}
+
+.actions-right .btn-secondary svg {
+    width: 24px;
+    height: 24px;
+}
+
+.actions-date {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    width: 100%;
+}
+
+.actions-date .btn-secondary svg {
+    width: 24px;
+    height: 24px;
+}
+
+.actions-date .date {
+    color: #828282;
+    font-size: 16px;
+    margin-left: 8px;
+}
+
+.post-detail-flex {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 32px;
+    justify-content: space-between;
+}
+
+.actions-date-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 160px;
+}
+
+.actions-icons {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.actions-date-vertical .btn-secondary svg {
+    width: 24px;
+    height: 24px;
+}
+
+.actions-date-vertical .btn-secondary {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.actions-date-vertical .date {
+    color: #828282;
+    font-size: 16px;
+    margin-top: 4px;
+    text-align: right;
+}
+
+.post-content {
+    flex: 1;
+    text-align: left;
 }
