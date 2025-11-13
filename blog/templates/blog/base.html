@@ -12,8 +12,13 @@
             <div class="container">
                 <!-- will cause the link to be sent to the browser only if the user requesting the page is logged in -->
                 {% if user.is_authenticated %}
+                    <!-- Button to create a new post -->
                     <a href="{% url 'post_new' %}" class="top-menu">
                         {% include './icons/file-earmark-plus.svg' %}
+                    </a>
+                    <!-- Button to view draft (unpublished) posts -->
+                    <a href="{% url 'post_draft_list' %}" class="top-menu">
+                        {% include './icons/pencil-square.svg'%}
                     </a>
                 {% endif %}
                 <h1><a href="/">Django Girls Blog</a></h1>
