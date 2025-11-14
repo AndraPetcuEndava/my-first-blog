@@ -18,7 +18,7 @@ def post_detail(request, pk):
 # Get posts that do NOT have a published_date (drafts only)
 @login_required
 def post_draft_list(request):
-    posts = Post.objects.filter(published_date__isnull=True).order_by('created_date')
+    posts = Post.objects.filter(published_date__isnull=True).order_by('-created_date')
     return render(request, 'blog/post_draft_list.html', {'posts': posts})
 
 # NEW POST VIEW – create a new blog post (draft by default)
@@ -30,7 +30,7 @@ def post_new(request):
             post = form.save(commit=False)
             post.author = request.user
             post.save()
-            return redirect('post_detail', pk=post.pk)
+            return redirect('post_draft_list')
     else:
         form = PostForm()
     return render(request, 'blog/post_edit.html', {'form': form})
@@ -62,6 +62,9 @@ def post_remove(request, pk):
     post = get_object_or_404(Post, pk=pk)
     if request.method == 'POST':
         post.delete()
-        return redirect('post_draft_list')
+        if post.published_date:
+            return redirect('post_list')
+        else:
+            return redirect('post_draft_list')
     return redirect('post_list')
 
