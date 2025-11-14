@@ -2,10 +2,29 @@
 
 {% block content %}
     {% for post in posts %}
-        <div class="post">
-            <p class="date">created: {{ post.created_date|date:'d-m-Y' }}</p>
-            <h2><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h2>
-            <p>{{ post.text|truncatechars:200 }}</p>
+        <div class="post post-detail-flex">
+            <div class="post-content">
+                <h2>{{ post.title }}</h2>
+                <p>{{ post.text|truncatechars:200 }}</p>
+            </div>
+            <div class="actions-row">
+                <form method="post" action="{% url 'post_publish' pk=post.pk %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary" title="Publish">
+                        {% include './icons/file-earmark-plus.svg' %}
+                        Publish
+                    </button>
+                </form>
+                <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}" title="Edit">
+                    {% include './icons/pencil-fill.svg' %}
+                </a>
+                <form method="post" action="{% url 'post_remove' pk=post.pk %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary" title="Delete">
+                        {% include './icons/trash-fill.svg' %}
+                    </button>
+                </form>
+            </div>
         </div>
     {% endfor %}
 {% endblock %}

@@ -10,7 +10,7 @@ body {
 .page-header {
     background-color: #f68528;
     margin-top: 0;
-    margin-bottom: 40px;
+    margin-bottom: 0;
     padding: 20px 20px 20px 40px;
     box-sizing: border-box;
 }
@@ -51,8 +51,10 @@ h4 {
 .top-menu:visited {
     color: #ffffff;
     float: right;
-    font-size: 40pt;
+    font-size: 48pt; /* bigger icons */
     margin-right: 20px;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 /* Space between posts */
@@ -94,20 +96,29 @@ h4 {
 
 /* Secondary buttons (Publish, Delete, etc.) */
 .btn-secondary {
-    background-color: #6c757d; /* gri */
-    color: #fff;
-    border: 1px solid #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    padding: 0 12px;
+    height: 36px;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #C25100;
+    border: 1px solid #C25100;
+    margin: 0;
+    transition: background 0.2s, color 0.2s;
 }
 
 .btn-secondary:hover {
-    background-color: #5a6268;
-    color: #fff;
-}
-
-/* Hover effect for buttons */
-.btn-secondary:hover {
-    color: #FFFFFF;
     background-color: #C25100;
+    color: #fff;
+}
+
+.btn-secondary svg {
+    width: 20px;
+    height: 20px;
+    margin-right: 4px;
 }
 
 .actions-right {
@@ -147,8 +158,15 @@ h4 {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
-    gap: 32px;
     justify-content: space-between;
+    gap: 32px;
+    margin-top: 32px;
+}
+
+.actions-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .actions-date-vertical {
@@ -191,4 +209,165 @@ h4 {
 .post-content {
     flex: 1;
     text-align: left;
+}
+
+#logout button {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: 'Lobster', cursive;
+  color: inherit;
+  cursor: pointer;
+  font-size: 15pt;
+}
+
+#logout {
+    font-size: 20pt;
+    font-family: 'Lobster', cursive;
+    color: #ffffff;
+    margin-right: 20px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.small a,
+.small a:hover,
+.small a:visited {
+    font-size: 15pt;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.header-logout,
+.header-new,
+.header-draft,
+.header-login {
+    display: flex;
+    align-items: center;
+}
+
+#logout button {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: 'Lobster', cursive;
+  color: inherit;
+  cursor: pointer;
+  font-size: 15pt;
+}
+
+#logout {
+    font-size: 20pt;
+    font-family: 'Lobster', cursive;
+    color: #ffffff;
+    margin-right: 20px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.top-menu {
+    font-size: 36pt;
+    color: #fff;
+    background: none;
+    border: none;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80px;
+    padding: 0;
+    box-sizing: border-box;
+    transition: color 0.2s;
+}
+
+.top-menu svg {
+    width: 48px;
+    height: 48px;
+    display: block;
+    transition: stroke 0.2s, fill 0.2s;
+}
+
+.top-menu:hover,
+.top-menu:focus,
+.top-menu:active {
+    color: #ffd700;
+    border: none;
+    background: none;
+    outline: none;
+    height: 80px;
+    padding: 0;
+}
+
+.top-menu:hover svg,
+.top-menu:focus svg,
+.top-menu:active svg {
+    stroke: #ffd700;
+    fill: #ffd700;
+}
+
+.logout-btn {
+    font-size: 20pt;
+    font-family: 'Lobster', cursive;
+    color: #ffffff;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    box-shadow: none;
+    outline: none;
+    transition: color 0.2s;
+}
+
+.logout-btn:focus,
+.logout-btn:hover,
+.logout-btn:active {
+    color: #ffd700;
+    background: none;
+    border: none;
+    outline: none;
+    box-shadow: none;
+}
+
+.header-btn {
+    font-size: 20pt;
+    font-family: 'Lobster', cursive;
+    color: #ffffff;
+    background: none;
+    border: none;
+    padding: 0 12px;
+    margin: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    box-shadow: none;
+    outline: none;
+    transition: color 0.2s;
+    text-decoration: none;
+}
+
+.header-btn:focus,
+.header-btn:hover,
+.header-btn:active {
+    color: #ffd700;
+    background: none;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    text-decoration: underline;
 }

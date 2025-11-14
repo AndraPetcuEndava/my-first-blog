@@ -9,19 +9,36 @@
     </head>
     <body>
         <header class="page-header">
-            <div class="container">
-                <!-- will cause the link to be sent to the browser only if the user requesting the page is logged in -->
-                {% if user.is_authenticated %}
-                    <!-- Button to create a new post -->
-                    <a href="{% url 'post_new' %}" class="top-menu">
-                        {% include './icons/file-earmark-plus.svg' %}
-                    </a>
-                    <!-- Button to view draft (unpublished) posts -->
-                    <a href="{% url 'post_draft_list' %}" class="top-menu">
-                        {% include './icons/pencil-square.svg'%}
-                    </a>
-                {% endif %}
+            <div class="container header-actions">
                 <h1><a href="/">Django Girls Blog</a></h1>
+                <div class="header-right">
+                    {% if user.is_authenticated %}
+                        <div class="header-new">
+                            <a href="{% url 'post_new' %}" class="header-btn">
+                                New Post
+                            </a>
+                        </div>
+                        <div class="header-draft">
+                            <a href="{% url 'post_draft_list' %}" class="header-btn">
+                                Drafts
+                            </a>
+                        </div>
+                        <div class="header-logout">
+                            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="header-btn">
+                                    Log out
+                                </button>
+                            </form>
+                        </div>
+                    {% else %}
+                        <div class="header-login">
+                            <a href="{% url 'login' %}" class="header-btn">
+                                Login
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </header>
         <main class="content container">
