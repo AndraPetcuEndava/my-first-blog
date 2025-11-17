@@ -1,11 +1,11 @@
-from django.shortcuts import redirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.utils import timezone
 from .models import Post, Comment
 from .forms import PostForm, CommentForm
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, HttpResponse
+from django.views.decorators.http import require_POST
 from django.urls import reverse
+from django.http import HttpResponseRedirect
 
 # LIST VIEW – show published posts on the homepage
 def post_list(request):
@@ -44,9 +44,11 @@ def post_edit(request, pk):
     if request.method == "POST":
         form = PostForm(request.POST, instance=post)
         if form.is_valid():
-            post = form.save(commit=False)
-            post.author = request.user
-            post.save()
+            updated_post = form.save(commit=False)
+            updated_post.author = request.user
+            # Do NOT update published_date on edit
+            updated_post.published_date = post.published_date
+            updated_post.save()
             return redirect('post_detail', pk=post.pk)
     else:
         form = PostForm(instance=post)
@@ -54,23 +56,21 @@ def post_edit(request, pk):
 
 # PUBLISH POST VIEW – publish a blog post
 @login_required
+@require_POST
 def post_publish(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    if request.method=='POST':
-        post.publish()
+    post.publish()
     return redirect('post_detail', pk=pk)
 
 # DELETE POST VIEW – delete a blog post
 @login_required
+@require_POST
 def post_remove(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    if request.method == 'POST':
-        post.delete()
-        if post.published_date:
-            return redirect('post_list')
-        else:
-            return redirect('post_draft_list')
-    return redirect('post_list')
+    # keep published flag before delete for redirect
+    was_published = bool(post.published_date)
+    post.delete()
+    return redirect('post_list' if was_published else 'post_draft_list')
 
 # Add a comment to a post
 def add_comment_to_post(request, pk):
@@ -80,31 +80,44 @@ def add_comment_to_post(request, pk):
         if form.is_valid():
             comment = form.save(commit=False)
             comment.post = post
+            comment.approved_comment = False  # New comment requires approval
             comment.save()
+
+            # AJAX: return only the list fragment
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                # Return only the comments HTML for AJAX
                 return render(request, 'blog/comments_list.html', {'post': post, 'user': request.user})
+
             return redirect('post_detail', pk=post.pk)
+
+        # validation failed – fallback full page (non-AJAX)
+        return render(request, 'blog/add_comment_to_post.html', {'form': form})
     else:
         form = CommentForm()
-    return render(request, 'blog/add_comment_to_post.html', {'form': form})
+        return render(request, 'blog/add_comment_to_post.html', {'form': form})
 
 # Approve a comment (make it visible)
 @login_required
+@require_POST
 def comment_approve(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
     comment.approved_comment = True
     comment.save()
-    return HttpResponseRedirect(reverse('post_detail', args=[comment.post.pk]))
+    post = comment.post
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'blog/comments_list.html', {'post': post, 'user': request.user})
+
+    return redirect('post_detail', pk=post.pk)
 
 # Remove a comment (delete from DB)
 @login_required
+@require_POST
 def comment_remove(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
-    post_pk = comment.post.pk
+    post = comment.post
     comment.delete()
-    return HttpResponseRedirect(reverse('post_detail', args=[post_pk]))
 
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'blog/comments_list.html', {'post': post, 'user': request.user})
 
-
-
+    return HttpResponseRedirect(reverse('post_detail', args=[post.pk]))

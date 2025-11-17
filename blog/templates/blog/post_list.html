@@ -23,13 +23,13 @@ Only posts that have a non-empty 'published_date' are shown. -->
             </p>
 
             <!-- COMMENTS SECTION: shows comment count (approved vs total) -->
-            <a href="{% url 'post_detail' pk=post.pk %}">Comments:
+            <span style="color: #6f6f6f; text-decoration: none; cursor:default;">Comments:
                 {% if user.is_authenticated %}
                     {{ post.comments.count }}
                 {% else %}
                     {{ post.approved_comments_count }}
                 {% endif %}
-            </a>
+            </span>
         </div>
     {% endfor %}
 {% endblock content %}

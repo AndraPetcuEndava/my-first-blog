@@ -8,44 +8,44 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-<!-- MAIN POST SECTION  -->
+<!-- ===================== POST SECTION ===================== -->
 <div class="post-article-container">
-    <h1>{{ post.title }}</h1>
-    <div class="date">{{ post.published_date }}</div>
-    <p>{{ post.text|linebreaksbr }}</p>
+  <h1>{{ post.title }}</h1>
+  <div class="date">{{ post.published_date }}</div>
+  <p>{{ post.text|linebreaksbr }}</p>
 
-    <!-- Action buttons (only visible to logged-in users) -->
-    <div class="actions-row">
-        {% if user.is_authenticated %}
-            {% if not post.published_date %}
-                <form method="post" action="{% url 'post_publish' pk=post.pk %}" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-secondary" title="Publish">
-                        {% include './icons/file-earmark-plus.svg' %}
-                        Publish
-                    </button>
-                </form>
-            {% endif %}
-            <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}" title="Edit">
-                {% include './icons/pencil-fill.svg' %}
-            </a>
-            <form method="post" action="{% url 'post_remove' pk=post.pk %}" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-secondary" title="Delete">
-                    {% include './icons/trash-fill.svg' %}
-                </button>
-            </form>
-        {% endif %}
-    </div>
+  <!-- Actions visible only to authenticated users -->
+  <div class="actions-row">
+    {% if user.is_authenticated %}
+      {% if not post.published_date %}
+        <form method="post" action="{% url 'post_publish' pk=post.pk %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-secondary" title="Publish">
+            {% include './icons/file-earmark-plus.svg' %} Publish
+          </button>
+        </form>
+      {% endif %}
+      <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}" title="Edit">
+        {% include './icons/pencil-fill.svg' %}
+      </a>
+      <form method="post" action="{% url 'post_remove' pk=post.pk %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-secondary" title="Delete">
+          {% include './icons/trash-fill.svg' %}
+        </button>
+      </form>
+    {% endif %}
+  </div>
 </div>
 
 <hr>
 
-<!-- Comment Modal -->
+<!-- ===================== COMMENT MODAL ===================== -->
 <div class="modal fade" id="addCommentModal" tabindex="-1" aria-labelledby="addCommentModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form id="comment-form" method="POST" action="{% url 'add_comment_to_post' pk=post.pk %}">
+      <!-- unique id + shared class -->
+      <form id="comment-form-modal" class="js-comment-form" method="POST" action="{% url 'add_comment_to_post' pk=post.pk %}">
         <div class="modal-header">
           <h5 class="modal-title" id="addCommentModalLabel">New comment</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -62,99 +62,91 @@
   </div>
 </div>
 
-<!-- COMMENTS SECTION -->
-<div id="comments" class="comments-section">
+<!-- ===================== COMMENTS SECTION ===================== -->
+<div id="comments-part">
+  <div id="comments" class="comments-section">
     <h2>Comments</h2>
 
-    <!-- Comment form -->
-    <form id="comment-form" method="POST" action="{% url 'add_comment_to_post' pk=post.pk %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-secondary">Add comment</button>
-    </form>
-
-<div id="comments-list">
-    <!-- IF LOGGED IN: show all comments (approved + pending) -->
-    {% if user.is_authenticated %}
-        {% for comment in post.comments.all %}
-            <div class="comment">
-                <div class="comment-meta" style="display: flex; align-items: center; gap: 16px;">
-                    <span class="comment-from"><strong>From:</strong> <span class="comment-author">{{ comment.author }}</span></span>
-                    <span class="comment-date">{{ comment.created_date|date:"M d, Y, g:i a" }}</span>
-                    {% if user.is_authenticated %}
-                        <!-- Comment moderation controls -->
-                        {% if not comment.approved_comment %}
-                            <a class="btn btn-default" href="{% url 'comment_approve' pk=comment.pk %}" title="Approve">
-                                {% include './icons/hand-thumbs-up.svg' %}
-                            </a>
-                            <a class="btn btn-default" href="{% url 'comment_remove' pk=comment.pk %}" title="Remove">
-                                {% include './icons/hand-thumbs-down.svg' %}
-                            </a>
-                        {% endif %}
-                        <form method="post" action="{% url 'comment_remove' pk=comment.pk %}" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-default" title="Delete">
-                                {% include './icons/trash-fill.svg' %}
-                            </button>
-                        </form>
-                    {% endif %}
-                </div>
-                <div class="comment-text">{{ comment.text }}</div>
-            </div>
-            {% if not forloop.last %}
-                <hr class="comment-separator">
-            {% endif %}
-        {% empty %}
-            <p>No comments yet.</p>
-        {% endfor %}
-    <!-- IF NOT LOGGED IN: show only approved comments -->
-    {% else %}
-        {% for comment in post.comments.all %}
-            {% if comment.approved_comment %}
-                <div class="comment">
-                    <div class="comment-meta" style="display: flex; align-items: center; gap: 16px;">
-                    <span class="comment-from"> From: </span>
-                    <span class="comment-author"><strong>{{ comment.author }}</strong></span><br>
-                    <span class="comment-date">{{ comment.created_date|date:"M d, Y, g:i a" }}</span>
-                    </div>
-                    <div class="comment-text">{{ comment.text }}</div>
-                </div>
-                {% if not forloop.last %}
-                    <hr class="comment-separator">
-                {% endif %}
-            {% endif %}
-        {% empty %}
-            <p>No comments yet.</p>
-        {% endfor %}
-    {% endif %}
+    <!-- list container (replaced by AJAX responses) -->
+    <div id="comments-list">
+      {% include 'blog/comments_list.html' %}
+    </div>
+  </div>
 </div>
 
-<!-- AJAX COMMENT FORM SUBMISSION -->
+<!-- ===================== AJAX HANDLERS ===================== -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    var commentForm = document.getElementById('comment-form');
-    if (commentForm) {
-        commentForm.onsubmit = function(e) {
-            e.preventDefault();
-            var form = this;
-            var xhr = new XMLHttpRequest();
-            xhr.open(form.method, form.action, true);
-            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-            var formData = new FormData(form);
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    document.getElementById('comments-list').innerHTML = xhr.responseText;
-                    form.reset();
-                    // Hide the modal after submit
-                    var modalEl = document.getElementById('addCommentModal');
-                    var modal = bootstrap.Modal.getInstance(modalEl);
-                    modal.hide();
-                }
-            };
-            xhr.send(formData);
-        };
+document.addEventListener('DOMContentLoaded', () => {
+  const listEl = document.getElementById('comments-list');
+  const sectionEl = document.getElementById('comments-part');
+
+  // Keep viewport anchored on comments after each update
+  function stayInComments() {
+    if (sectionEl) sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ADD COMMENT (works for inline + modal via shared class)
+  document.querySelectorAll('.js-comment-form').forEach((form) => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const res = await fetch(form.action, {
+        method: form.method,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        body: new FormData(form) // includes CSRF token
+      });
+      if (res.ok) {
+        listEl.innerHTML = await res.text(); // replace list only
+        form.reset();
+
+        // close modal if present
+        const modalEl = document.getElementById('addCommentModal');
+        if (modalEl && window.bootstrap) {
+          const modal = window.bootstrap.Modal.getInstance(modalEl);
+          if (modal) modal.hide();
+        }
+        stayInComments();
+      }
+    });
+  });
+
+  // APPROVE / DELETE — event delegation so it survives re-render
+  document.addEventListener('click', async (e) => {
+    const actionEl = e.target.closest('.js-comment-action');
+    if (!actionEl) return;
+
+    e.preventDefault();
+
+    const url = actionEl.dataset.url;
+    const method = (actionEl.dataset.method || 'GET').toUpperCase();
+
+    const headers = { 'X-Requested-With': 'XMLHttpRequest' };
+    let body = null;
+
+    if (method === 'POST') {
+      headers['X-CSRFToken'] = getCookie('csrftoken');
+      body = new FormData(); // empty body is fine; server only needs method + csrf
     }
+
+    const res = await fetch(url, { method, headers, body });
+    if (res.ok) {
+      listEl.innerHTML = await res.text();
+      stayInComments();
+    }
+  });
+
+  // CSRF helper
+  function getCookie(name) {
+    let c = document.cookie ? document.cookie.split(';') : [];
+    for (let i = 0; i < c.length; i++) {
+      let x = c[i].trim();
+      if (x.substring(0, name.length + 1) === (name + '=')) {
+        return decodeURIComponent(x.substring(name.length + 1));
+      }
+    }
+    return null;
+  }
 });
 </script>
-
 {% endblock %}
+
+

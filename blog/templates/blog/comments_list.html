@@ -1,0 +1,60 @@
+<style>
+    .add-comment-btn {
+        margin-bottom:12px; color: #d35400; background: #fff; border: 2px solid #d35400; border-radius: 8px; font-size: 1.25rem; font-family: inherit; font-weight: 400; padding: 8px 24px; transition: background 0.2s, color 0.2s;
+        display: inline-block;
+        text-align: center;
+        text-decoration: none;
+    }
+    .add-comment-btn:hover, .add-comment-btn:focus {
+        background: #d35400;
+        color: #fff;
+    }
+</style>
+<a href="{% url 'add_comment_to_post' pk=post.pk %}" class="add-comment-btn">Add comment</a>
+
+{% for comment in post.comments.all %}
+    {% if user.is_authenticated or comment.approved_comment %}
+        <div class="comment">
+            <div class="comment-meta" style="display:flex;align-items:center;gap:16px;">
+                <strong>From:</strong> {{ comment.author }}
+                <span class="comment-date">{{ comment.created_date|date:"M d, Y, g:i a" }}</span>
+                {% if user.is_authenticated %}
+                    {% if not comment.approved_comment %}
+                        <button type="button"
+                                class="btn btn-sm btn-outline-success js-comment-action"
+                                data-method="POST"
+                                data-url="{% url 'comment_approve' pk=comment.pk %}"
+                                title="Approve">
+                            {% include './icons/hand-thumbs-up.svg' %}
+                        </button>
+                        <button type="button"
+                                class="btn btn-sm btn-outline-danger js-comment-action"
+                                data-method="POST"
+                                data-url="{% url 'comment_remove' pk=comment.pk %}"
+                                title="Disapprove">
+                            {% include './icons/hand-thumbs-down.svg' %}
+                        </button>
+                    {% else %}
+                        <!-- Delete button for approved comments -->
+                        <button type="button"
+                                class="btn btn-sm btn-outline-danger js-comment-action"
+                                data-method="POST"
+                                data-url="{% url 'comment_remove' pk=comment.pk %}"
+                                title="Delete">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5.5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6zm3 .5a.5.5 0 0 1 .5-.5.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6z"/>
+                              <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1-1V1a1 1 0 0 0-1-1h-7a1 1 0 0 0-1 1v1a1 1 0 0 1-1 1H1v1h14V3h-1.5zm-1-1V1h-7v1h7zM2.5 4v9a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2V4h-11zm11 9a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1V4h9v9z"/>
+                            </svg>
+                        </button>
+                    {% endif %}
+                {% endif %}
+            </div>
+            <div class="comment-text">{{ comment.text }}</div>
+        </div>
+    {% endif %}
+    {% if not forloop.last %}
+        <hr class="comment-separator">
+    {% endif %}
+{% empty %}
+    <p>No comments yet.</p>
+{% endfor %}
