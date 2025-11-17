@@ -367,3 +367,8 @@ h4 {
     box-shadow: none;
     text-decoration: underline;
 }
+
+/* ---------- COMMENTS SECTION ---------- */
+.comment {
+    margin: 20px 0px 20px 20px;
+}

@@ -1,16 +1,23 @@
-<!-- displays only published blog posts (those with non-empty published_date) -->
+<!-- This template displays all published posts from the database.
+Only posts that have a non-empty 'published_date' are shown. -->
  
 {% extends 'blog/base.html' %}
 
 {% block content %}
     {% for post in posts %}
-        <article class="post">
-            <time class="date">
+        <div class="post">
+            <h1><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h1>
+            <div class="date">
                 {{ post.published_date }}
-            </time>
-            <h2><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h2>
-            <p>{{ post.text|linebreaksbr }}</p>
-        </article>
+            </div>
+            <p style="display: inline;">
+                {{ post.preview_sentence }}
+                {% if post.text|length > post.preview_sentence|length %}
+                    <button id="readmore-{{ post.pk }}" onclick="window.location.href='{% url 'post_detail' pk=post.pk %}'" class="btn btn-secondary">Read more</button>
+                {% endif %}
+            </p>
+            <a href="{% url 'post_detail' pk=post.pk %}#comments">Comments: {{ post.comments.count }}</a>
+        </div>
     {% endfor %}
-{% endblock %}
+{% endblock content %}
 
