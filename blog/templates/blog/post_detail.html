@@ -67,7 +67,6 @@
   <div id="comments" class="comments-section">
     <h2>Comments</h2>
 
-    <!-- list container (replaced by AJAX responses) -->
     <div id="comments-list">
       {% include 'blog/comments_list.html' %}
     </div>
@@ -92,13 +91,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch(form.action, {
         method: form.method,
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        body: new FormData(form) // includes CSRF token
+        body: new FormData(form)
       });
       if (res.ok) {
-        listEl.innerHTML = await res.text(); // replace list only
+        listEl.innerHTML = await res.text();
         form.reset();
-
-        // close modal if present
         const modalEl = document.getElementById('addCommentModal');
         if (modalEl && window.bootstrap) {
           const modal = window.bootstrap.Modal.getInstance(modalEl);
@@ -109,7 +106,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // APPROVE / DELETE — event delegation so it survives re-render
+    // REPLY TO COMMENT (AJAX, stays in place, works for all forms)
+    document.addEventListener('submit', async (e) => {
+      const form = e.target.closest('.reply-form');
+      if (!form) return;
+      e.preventDefault();
+      const res = await fetch(form.action, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': getCookie('csrftoken') },
+        body: new FormData(form)
+      });
+      if (res.ok) {
+        listEl.innerHTML = await res.text();
+        stayInComments();
+      }
+    });
+
+  // ------------------- APPROVE / DELETTE ---------------
   document.addEventListener('click', async (e) => {
     const actionEl = e.target.closest('.js-comment-action');
     if (!actionEl) return;
@@ -124,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (method === 'POST') {
       headers['X-CSRFToken'] = getCookie('csrftoken');
-      body = new FormData(); // empty body is fine; server only needs method + csrf
+      body = new FormData();
     }
 
     const res = await fetch(url, { method, headers, body });
@@ -134,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // CSRF helper
+  //------------------- CSFR helper -------------------
   function getCookie(name) {
     let c = document.cookie ? document.cookie.split(';') : [];
     for (let i = 0; i < c.length; i++) {

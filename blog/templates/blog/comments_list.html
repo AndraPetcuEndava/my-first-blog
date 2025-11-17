@@ -1,23 +1,30 @@
-<style>
-    .add-comment-btn {
-        margin-bottom:12px; color: #d35400; background: #fff; border: 2px solid #d35400; border-radius: 8px; font-size: 1.25rem; font-family: inherit; font-weight: 400; padding: 8px 24px; transition: background 0.2s, color 0.2s;
-        display: inline-block;
-        text-align: center;
-        text-decoration: none;
-    }
-    .add-comment-btn:hover, .add-comment-btn:focus {
-        background: #d35400;
-        color: #fff;
-    }
-</style>
-<a href="{% url 'add_comment_to_post' pk=post.pk %}" class="add-comment-btn">Add comment</a>
+<!-- =========================================================
+   COMMENTS LIST PARTIAL
+   =========================================================
+   Renders all comments for a post. 
+   returned by views for AJAX updates (add / approve / delete).
+   ---------------------------------------------------------
+   Features:
+   - Displays top-level comments and their replies
+   - Shows moderation controls for authenticated users
+   - Includes reply forms for approved comments
+   - Supports "show more replies" toggle
+========================================================= -->
 
+{% if not user.is_authenticated %}
+<a href="{% url 'add_comment_to_post' pk=post.pk %}" class="add-comment-btn">Add comment</a>
+{% endif %}
+
+<!-- ---------- MAIN COMMENTS LOOP ---------- -->
 {% for comment in post.comments.all %}
+{% if not comment.parent %}
     {% if user.is_authenticated or comment.approved_comment %}
         <div class="comment">
+            <!-- ---------- COMMENT METADATA (author, date, moderation controls) ---------- -->
             <div class="comment-meta" style="display:flex;align-items:center;gap:16px;">
                 <strong>From:</strong> {{ comment.author }}
                 <span class="comment-date">{{ comment.created_date|date:"M d, Y, g:i a" }}</span>
+                
                 {% if user.is_authenticated %}
                     {% if not comment.approved_comment %}
                         <button type="button"
@@ -35,6 +42,7 @@
                             {% include './icons/hand-thumbs-down.svg' %}
                         </button>
                     {% else %}
+
                         <!-- Delete button for approved comments -->
                         <button type="button"
                                 class="btn btn-sm btn-outline-danger js-comment-action"
@@ -50,11 +58,55 @@
                 {% endif %}
             </div>
             <div class="comment-text">{{ comment.text }}</div>
+
+            <!-- REPLIES SECTION -->
+            {% with replies=comment.replies.all|dictsort:"created_date" %}
+                {% if replies %}
+                    <div class="comment-replies" style="margin-left:32px;">
+                        {% for reply in replies|slice:":2" %}
+                            <div class="reply">
+                                   <div class="reply-meta" style="display:flex;align-items:center;gap:12px;">
+                                       <strong>Reply from:</strong> {{ reply.author }}
+                                       <span class="reply-date">{{ reply.created_date|date:"M d, Y, g:i a" }}</span>
+                                </div>
+                                <div class="reply-text">{{ reply.text }}</div>
+                            </div>
+                        {% endfor %}
+
+                        <!-- Show "More replies" toggle if >2 replies -->
+                        {% if replies|length > 2 %}
+                            <button type="button" class="btn btn-sm btn-outline-primary show-more-replies" onclick="this.nextElementSibling.style.display='block';this.style.display='none';">More replies</button>
+                            <div class="more-replies" style="display:none;">
+                                {% for reply in replies|slice:"2:" %}
+                                    <div class="reply">
+                                           <div class="reply-meta" style="display:flex;align-items:center;gap:12px;">
+                                               <strong>Reply from:</strong> {{ reply.author }}
+                                               <span class="reply-date">{{ reply.created_date|date:"M d, Y, g:i a" }}</span>
+                                        </div>
+                                        <div class="reply-text">{{ reply.text }}</div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- REPLY FORM (only for posted/approved comments) -->
+            {% if comment.approved_comment %}
+            <form method="POST" action="{% url 'add_reply_to_comment' pk=comment.pk %}" class="reply-form" style="margin-left:32px; margin-top:8px;">
+                {% csrf_token %}
+                <input type="text" name="author" placeholder="Your name" required style="margin-right:8px;">
+                <input type="text" name="text" placeholder="Reply..." required style="margin-right:8px;">
+                <button type="submit" class="btn btn-sm btn-outline-success">Reply</button>
+            </form>
+            {% endif %}
         </div>
     {% endif %}
     {% if not forloop.last %}
         <hr class="comment-separator">
     {% endif %}
+{% endif %}
 {% empty %}
     <p>No comments yet.</p>
 {% endfor %}

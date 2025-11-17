@@ -41,10 +41,13 @@ class Post(models.Model):
 # ------------------------------
 # COMMENT MODEL
 # ------------------------------
+
 class Comment(models.Model):
     # Each comment belongs to a specific Post
-    # 'related_name' allows us to access all comments of a post via post.comments
     post = models.ForeignKey('blog.Post', on_delete=models.CASCADE, related_name='comments')
+
+    # Replies: parent comment (null for top-level)
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
 
     # Basic comment info
     author = models.CharField(max_length=200)
@@ -63,7 +66,7 @@ class Comment(models.Model):
     def __str__(self):
         """Readable representation: shows part of the comment text."""
         return self.text[:50]
-    
+
     class Meta:
         ordering = ['-created_date']  # newest first
 

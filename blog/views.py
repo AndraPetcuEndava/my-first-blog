@@ -44,11 +44,9 @@ def post_edit(request, pk):
     if request.method == "POST":
         form = PostForm(request.POST, instance=post)
         if form.is_valid():
-            updated_post = form.save(commit=False)
-            updated_post.author = request.user
-            # Do NOT update published_date on edit
-            updated_post.published_date = post.published_date
-            updated_post.save()
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
             return redirect('post_detail', pk=post.pk)
     else:
         form = PostForm(instance=post)
@@ -87,7 +85,8 @@ def add_comment_to_post(request, pk):
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return render(request, 'blog/comments_list.html', {'post': post, 'user': request.user})
 
-            return redirect('post_detail', pk=post.pk)
+            from django.urls import reverse
+            return HttpResponseRedirect(reverse('post_detail', args=[post.pk]) + '#comments-part')
 
         # validation failed – fallback full page (non-AJAX)
         return render(request, 'blog/add_comment_to_post.html', {'form': form})
@@ -121,3 +120,30 @@ def comment_remove(request, pk):
         return render(request, 'blog/comments_list.html', {'post': post, 'user': request.user})
 
     return HttpResponseRedirect(reverse('post_detail', args=[post.pk]))
+
+# Add a reply to a comment
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+@csrf_exempt
+def add_reply_to_comment(request, pk):
+    from .models import Comment
+    parent_comment = get_object_or_404(Comment, pk=pk)
+    if request.method == "POST":
+        author = request.POST.get('author')
+        text = request.POST.get('text')
+        if author and text:
+            # Create reply comment
+            reply = Comment.objects.create(
+                post=parent_comment.post,
+                author=author,
+                text=text,
+                approved_comment=True,
+            )
+            # Link reply to parent
+            reply.parent = parent_comment
+            reply.save()
+        # AJAX: return updated comments list
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, 'blog/comments_list.html', {'post': parent_comment.post, 'user': request.user})
+        return redirect('post_detail', pk=parent_comment.post.pk)
+    return redirect('post_detail', pk=parent_comment.post.pk)
