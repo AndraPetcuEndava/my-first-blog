@@ -1,11 +1,20 @@
+<!-- Displays a single blog post in detail, with:
+       - Full post content
+       - Action buttons (publish/edit/delete)
+       - Comment form (normal + modal)
+       - Dynamic AJAX comment loading
+     --------------------------------------------------------- -->
+
 {% extends 'blog/base.html' %}
 
 {% block content %}
-<div class="post-detail-flex">
-    <div class="post-content">
-        <h2>{{ post.title }}</h2>
-        <p>{{ post.text|linebreaksbr }}</p>
-    </div>
+<!-- MAIN POST SECTION  -->
+<div class="post-article-container">
+    <h1>{{ post.title }}</h1>
+    <div class="date">{{ post.published_date }}</div>
+    <p>{{ post.text|linebreaksbr }}</p>
+
+    <!-- Action buttons (only visible to logged-in users) -->
     <div class="actions-row">
         {% if user.is_authenticated %}
             {% if not post.published_date %}
@@ -31,29 +40,121 @@
 </div>
 
 <hr>
-<div id="comments">
-    <a class="btn btn-secondary" role="button" href="{% url 'add_comment_to_post' pk=post.pk %}">Add comment</a>
-    {% for comment in post.comments.all %}
-    {% if user.is_authenticated or comment.approved_comment %}
-    <div class="comment">
-        <div class="date">
-            {{ comment.created_date }}
-            {% if not comment.approved_comment %}
-                <a class="btn btn-default" href="{% url 'comment_remove' pk=comment.pk %}">
-                   {% include './icons/hand-thumbs-down.svg' %}
-                </a>
-                <a class="btn btn-default" href="{% url 'comment_approve' pk=comment.pk %}">
-                   {% include './icons/hand-thumbs-up.svg' %}
-                </a>
-            {% endif %}
+
+<!-- Comment Modal -->
+<div class="modal fade" id="addCommentModal" tabindex="-1" aria-labelledby="addCommentModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="comment-form" method="POST" action="{% url 'add_comment_to_post' pk=post.pk %}">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addCommentModalLabel">New comment</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <strong>{{ comment.author }}</strong>
-        <p>{{ comment.text|linebreaks }}</p>
+        <div class="modal-body">
+          {% csrf_token %}
+          {{ form.as_p }}
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-secondary">Send</button>
+        </div>
+      </form>
     </div>
-    {% endif %}
-{% empty %}
-    <p>No comments here yet :(</p>
-{% endfor %}
+  </div>
 </div>
+
+<!-- COMMENTS SECTION -->
+<div id="comments" class="comments-section">
+    <h2>Comments</h2>
+
+    <!-- Comment form -->
+    <form id="comment-form" method="POST" action="{% url 'add_comment_to_post' pk=post.pk %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-secondary">Add comment</button>
+    </form>
+
+<div id="comments-list">
+    <!-- IF LOGGED IN: show all comments (approved + pending) -->
+    {% if user.is_authenticated %}
+        {% for comment in post.comments.all %}
+            <div class="comment">
+                <div class="comment-meta" style="display: flex; align-items: center; gap: 16px;">
+                    <span class="comment-from"><strong>From:</strong> <span class="comment-author">{{ comment.author }}</span></span>
+                    <span class="comment-date">{{ comment.created_date|date:"M d, Y, g:i a" }}</span>
+                    {% if user.is_authenticated %}
+                        <!-- Comment moderation controls -->
+                        {% if not comment.approved_comment %}
+                            <a class="btn btn-default" href="{% url 'comment_approve' pk=comment.pk %}" title="Approve">
+                                {% include './icons/hand-thumbs-up.svg' %}
+                            </a>
+                            <a class="btn btn-default" href="{% url 'comment_remove' pk=comment.pk %}" title="Remove">
+                                {% include './icons/hand-thumbs-down.svg' %}
+                            </a>
+                        {% endif %}
+                        <form method="post" action="{% url 'comment_remove' pk=comment.pk %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-default" title="Delete">
+                                {% include './icons/trash-fill.svg' %}
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+                <div class="comment-text">{{ comment.text }}</div>
+            </div>
+            {% if not forloop.last %}
+                <hr class="comment-separator">
+            {% endif %}
+        {% empty %}
+            <p>No comments yet.</p>
+        {% endfor %}
+    <!-- IF NOT LOGGED IN: show only approved comments -->
+    {% else %}
+        {% for comment in post.comments.all %}
+            {% if comment.approved_comment %}
+                <div class="comment">
+                    <div class="comment-meta" style="display: flex; align-items: center; gap: 16px;">
+                    <span class="comment-from"> From: </span>
+                    <span class="comment-author"><strong>{{ comment.author }}</strong></span><br>
+                    <span class="comment-date">{{ comment.created_date|date:"M d, Y, g:i a" }}</span>
+                    </div>
+                    <div class="comment-text">{{ comment.text }}</div>
+                </div>
+                {% if not forloop.last %}
+                    <hr class="comment-separator">
+                {% endif %}
+            {% endif %}
+        {% empty %}
+            <p>No comments yet.</p>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<!-- AJAX COMMENT FORM SUBMISSION -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var commentForm = document.getElementById('comment-form');
+    if (commentForm) {
+        commentForm.onsubmit = function(e) {
+            e.preventDefault();
+            var form = this;
+            var xhr = new XMLHttpRequest();
+            xhr.open(form.method, form.action, true);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            var formData = new FormData(form);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    document.getElementById('comments-list').innerHTML = xhr.responseText;
+                    form.reset();
+                    // Hide the modal after submit
+                    var modalEl = document.getElementById('addCommentModal');
+                    var modal = bootstrap.Modal.getInstance(modalEl);
+                    modal.hide();
+                }
+            };
+            xhr.send(formData);
+        };
+    }
+});
+</script>
 
 {% endblock %}

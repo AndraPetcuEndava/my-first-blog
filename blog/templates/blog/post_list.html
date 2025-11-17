@@ -6,18 +6,30 @@ Only posts that have a non-empty 'published_date' are shown. -->
 {% block content %}
     {% for post in posts %}
         <div class="post">
+            <!-- POST HEADER: title and publish date -->
             <h1><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h1>
             <div class="date">
                 {{ post.published_date }}
             </div>
-            <p style="display: inline;">
-                {{ post.preview_sentence }}
-                {% if post.text|length > post.preview_sentence|length %}
-                    <button id="readmore-{{ post.pk }}" onclick="window.location.href='{% url 'post_detail' pk=post.pk %}'" class="btn btn-secondary">Read more</button>
-                {% endif %}
+
+            <!-- POST PREVIEW: short snippet + Read more button -->
+            <p style="display: flex; align-items: center; flex-wrap: wrap;">
+                <span>
+                    {{ post.preview_sentence }}
+                    {% if post.text|length > post.preview_sentence|length %}
+                        <button id="readmore-{{ post.pk }}" onclick="window.location.href='{% url 'post_detail' pk=post.pk %}'" class="btn btn-secondary" style="display:inline; margin-left:8px;">Read more</button>
+                    {% endif %}
+                </span>
             </p>
-            <a href="{% url 'post_detail' pk=post.pk %}#comments">Comments: {{ post.comments.count }}</a>
+
+            <!-- COMMENTS SECTION: shows comment count (approved vs total) -->
+            <a href="{% url 'post_detail' pk=post.pk %}">Comments:
+                {% if user.is_authenticated %}
+                    {{ post.comments.count }}
+                {% else %}
+                    {{ post.approved_comments_count }}
+                {% endif %}
+            </a>
         </div>
     {% endfor %}
 {% endblock content %}
-

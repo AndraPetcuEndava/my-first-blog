@@ -1,9 +1,25 @@
+<!-- ---------------------------------------
+   LOGIN TEMPLATE
+---------------------------------------
+     Purpose:
+       Displays the login form used by Django’s built-in
+       authentication system.
+     ---------------------------------------------------------
+     Used when:
+       - The user is redirected here to log in before
+         accessing restricted pages (e.g. drafts, edit, new post). -->
+       
+
 {% extends "blog/base.html" %}
 
 {% block content %}
     {% if form.errors %}
         <p>Your username and password didn't match. Please try again.</p>
     {% endif %}
+
+    <!-- -------------------------------
+       LOGIN FORM
+       ------------------------------- -->
 
     <form method="post" action="{% url 'login' %}">
     {% csrf_token %}
@@ -17,6 +33,10 @@
             <td>{{ form.password }}</td>
         </tr>
         </table>
+
+        <!-- -------------------------------
+           SUBMIT BUTTONS
+           ------------------------------- -->
 
         <input type="submit" value="login" />
         <input type="hidden" name="next" value="{{ next }}" />

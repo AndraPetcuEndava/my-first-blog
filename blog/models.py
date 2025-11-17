@@ -29,12 +29,14 @@ class Post(models.Model):
         preview = ''.join(sentences[:count]).strip()
         if preview:
             return preview
-        return self.text[:300]  # fallback
+        return self.text[:300]
 
     def __str__(self):
         """Readable representation in admin or shell."""
         return self.title
-    
+
+    def approved_comments_count(self):
+        return self.comments.filter(approved_comment=True).count()
 
 # ------------------------------
 # COMMENT MODEL
@@ -62,5 +64,9 @@ class Comment(models.Model):
         """Readable representation: shows part of the comment text."""
         return self.text[:50]
     
+    class Meta:
+        ordering = ['-created_date']  # newest first
+
+# Return all approved comments for a given Post instance.
 def approved_comments(self):
     return self.comments.filter(approved_comment=True)

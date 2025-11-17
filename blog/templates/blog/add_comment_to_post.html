@@ -1,9 +1,21 @@
+<!-- ADD COMMENT TEMPLATE
+     Purpose:
+       Renders a standalone page that allows users to add a
+       new comment to a specific blog post.
+     ---------------------------------------------------------
+     Used when:
+       - The user submits a comment via a normal HTTP request.
+       - The `add_comment_to_post` view renders this template
+         if `form.is_valid()` fails or method == "GET". -->
+
 {% extends 'blog/base.html' %}
 
 {% block content %}
+<!-- NEW COMMENT FORM SECTION -->
 <h1>New comment</h1>
 <form method="POST" class="post-form">{% csrf_token %}
     {{ form.as_p }}
     <button type="submit" class="save btn btn-secondary">Send</button>
 </form>
 {% endblock %}
+

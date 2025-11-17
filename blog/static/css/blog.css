@@ -1,10 +1,31 @@
+/* =========================================================
+   GLOBAL HEADINGS & TYPOGRAPHY
+   =========================================================
+   Affects all <h1>, <h2>, <h3>, <h4> tags and linked titles.
+   Changes their font to 'Lobster' and applies brand color.
+========================================================= */
 h1 a, h2 a {
-    color:#C25100;
+    color: #FF5640;
     font-family: 'Lobster';
 }
 
+h1, h2, h3, h4 {
+    font-family: 'Lobster', cursive;
+}
+
+.date {
+    color: #828282;
+}
+
+
+/* =========================================================
+   PAGE HEADER BAR (TOP AREA)
+   =========================================================
+   Styles the red/orange navigation header at the top of pages.
+   Includes title color, spacing, and overall background.
+========================================================= */
 .page-header {
-    background-color: #f68528;
+    background-color: #FF5640;
     margin-top: 0;
     margin-bottom: 0;
     padding: 20px 20px 20px 10px;
@@ -20,18 +41,13 @@ h1 a, h2 a {
     text-decoration: none;
 }
 
-h1,
-h2,
-h3,
-h4 {
-    font-family: 'Lobster', cursive;
-}
 
-.date {
-    color: #828282;
-}
-
-/* Save button positioning */
+/* =========================================================
+   FORM ELEMENTS (POST FORM, COMMENT FORM)
+   =========================================================
+   Expands textareas and inputs to 100% width,
+   and positions Save buttons to the right.
+========================================================= */
 .save {
     float: right;
 }
@@ -41,24 +57,36 @@ h4 {
     width: 100%;
 }
 
-/* Top-right header menu (icons and buttons) */
+
+/* =========================================================
+   HEADER MENU & ICON BUTTONS
+   =========================================================
+   Controls icons and text buttons in the header navigation bar.
+   Changes hover colors, font sizes, and spacing between buttons.
+========================================================= */
 .top-menu,
 .top-menu:hover,
 .top-menu:visited {
     color: #ffffff;
     float: right;
-    font-size: 48pt; /* bigger icons */
+    font-size: 48pt;
     margin-right: 20px;
     display: inline-block;
     vertical-align: middle;
 }
 
-/* Space between posts */
+
+/* =========================================================
+   BLOG POSTS — LIST & DETAIL VIEW
+   =========================================================
+   Handles spacing, title colors, and hover effects
+   for posts displayed in lists or individually.
+========================================================= */
 .post {
     margin-bottom: 70px;
 }
 
-/* Post title color */
+/* Post title link styles */
 .post h2 a,
 .post h2 a:visited {
     color: #000000;
@@ -82,7 +110,7 @@ h4 {
     text-decoration: underline;
 }
 
-
+/* Layout for post date and action icons */
 .post > .date,
 .post > .actions {
     display: flex;
@@ -90,7 +118,13 @@ h4 {
     align-items: center;
 }
 
-/* Secondary buttons (Publish, Delete, etc.) */
+
+/* =========================================================
+   BUTTON STYLES
+   =========================================================
+   Reusable styling for all secondary buttons such as
+   Publish, Delete, Edit, etc.
+========================================================= */
 .btn-secondary {
     display: flex;
     align-items: center;
@@ -117,31 +151,35 @@ h4 {
     margin-right: 4px;
 }
 
-.actions-right {
+
+/* =========================================================
+   ACTION BUTTON GROUPS (publish, edit, delete, etc.)
+   =========================================================
+   Arranges buttons horizontally (actions-row) or vertically
+   (actions-date-vertical) depending on the template layout.
+========================================================= */
+.actions-right,
+.actions-date,
+.actions-row,
+.actions-date-vertical,
+.actions-icons {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
     gap: 8px;
+}
+
+.actions-right {
+    justify-content: flex-end;
     margin-bottom: 8px;
     width: 100%;
 }
 
-.actions-right .btn-secondary svg {
-    width: 24px;
-    height: 24px;
-}
-
 .actions-date {
-    display: flex;
     justify-content: flex-end;
     align-items: center;
     gap: 8px;
     margin-bottom: 8px;
     width: 100%;
-}
-
-.actions-date .btn-secondary svg {
-    width: 24px;
-    height: 24px;
 }
 
 .actions-date .date {
@@ -150,49 +188,12 @@ h4 {
     margin-left: 8px;
 }
 
-.post-detail-flex {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 32px;
-    margin-top: 32px;
-}
-
-.actions-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
+/* Vertical arrangement used in post drafts and details */
 .actions-date-vertical {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     min-width: 160px;
-}
-
-.actions-icons {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 8px;
-}
-
-.actions-date-vertical .btn-secondary svg {
-    width: 24px;
-    height: 24px;
-}
-
-.actions-date-vertical .btn-secondary {
-    width: 36px;
-    height: 36px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    margin-left: 0;
-    margin-right: 0;
 }
 
 .actions-date-vertical .date {
@@ -202,78 +203,84 @@ h4 {
     text-align: right;
 }
 
+/* Layout for detailed post view */
+.post-detail-flex {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 32px;
+    margin-top: 32px;
+}
+
 .post-content {
     flex: 1;
     text-align: left;
 }
 
-#logout button {
-  background: none;
-  border: none;
-  padding: 0;
-  font-family: 'Lobster', cursive;
-  color: inherit;
-  cursor: pointer;
-  font-size: 15pt;
-}
 
-#logout {
-    font-size: 20pt;
-    font-family: 'Lobster', cursive;
-    color: #ffffff;
-    margin-right: 20px;
-    display: inline-block;
-    vertical-align: middle;
-}
-
-.small a,
-.small a:hover,
-.small a:visited {
-    font-size: 15pt;
-    color: #ffffff;
-    text-decoration: none;
-}
-
+/* =========================================================
+   HEADER ACTION BAR (LOGO + NAVIGATION LINKS)
+   =========================================================
+   Styles the top orange bar including the blog title and
+   right-side links (Login, Logout, New Post, Drafts).
+========================================================= */
 .header-actions {
+    background-color: #FF5640;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 20px 20px 20px 10px;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
 }
 
+/* Blog title (left side of header) */
+.header-actions h1,
+.header-actions h1 a {
+    color: #fff;
+    font-size: 48px;
+    font-family: 'Lobster', cursive;
+    text-decoration: none;
+    margin: 0;
+    margin-left: 10px;
+}
+
+/* Layout of right-side header buttons */
 .header-right {
     display: flex;
     align-items: center;
     gap: 24px;
 }
 
-.header-logout,
-.header-new,
-.header-draft,
-.header-login {
-    display: flex;
-    align-items: center;
-}
-
-#logout button {
-  background: none;
-  border: none;
-  padding: 0;
-  font-family: 'Lobster', cursive;
-  color: inherit;
-  cursor: pointer;
-  font-size: 15pt;
-}
-
-#logout {
-    font-size: 20pt;
+/* Header button (Login, Logout, Drafts, etc.) */
+.header-btn {
+    font-size: 28px;
     font-family: 'Lobster', cursive;
-    color: #ffffff;
-    margin-right: 20px;
-    display: inline-block;
-    vertical-align: middle;
+    color: #fff;
+    background: none;
+    border: none;
+    padding: 0 12px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s;
 }
 
+.header-btn:hover,
+.header-btn:focus {
+    color: #192b37;
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   ICON BUTTONS (top menu icons, logout)
+   =========================================================
+   Controls icon sizing and hover transitions for the
+   navigation bar and logout button.
+========================================================= */
 .top-menu {
     font-size: 36pt;
     color: #fff;
@@ -284,8 +291,6 @@ h4 {
     align-items: center;
     justify-content: center;
     height: 80px;
-    padding: 0;
-    box-sizing: border-box;
     transition: color 0.2s;
 }
 
@@ -296,79 +301,90 @@ h4 {
     transition: stroke 0.2s, fill 0.2s;
 }
 
-.top-menu:hover,
-.top-menu:focus,
-.top-menu:active {
-    color: #ffd700;
-    border: none;
-    background: none;
-    outline: none;
-    height: 80px;
-    padding: 0;
-}
-
 .top-menu:hover svg,
 .top-menu:focus svg,
 .top-menu:active svg {
-    stroke: #ffd700;
-    fill: #ffd700;
+    stroke: #192b37;
+    fill: #192b37;
 }
 
+/* Logout button design */
 .logout-btn {
     font-size: 20pt;
     font-family: 'Lobster', cursive;
     color: #ffffff;
     background: none;
     border: none;
-    padding: 0;
-    margin: 0;
     cursor: pointer;
     display: flex;
     align-items: center;
-    box-shadow: none;
-    outline: none;
     transition: color 0.2s;
 }
 
-.logout-btn:focus,
 .logout-btn:hover,
-.logout-btn:active {
-    color: #ffd700;
-    background: none;
-    border: none;
-    outline: none;
-    box-shadow: none;
+.logout-btn:focus {
+    color: #192b37;
 }
 
-.header-btn {
-    font-size: 20pt;
+
+/* =========================================================
+   COMMENTS SECTION
+   =========================================================
+   Applies soft gray background and spacing to comment area
+   on post detail pages.
+========================================================= */
+.comments-section {
+    background: #fafafa;
+    border-radius: 18px;
+    padding: 32px;
+    margin-bottom: 40px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.comments-section h2 {
     font-family: 'Lobster', cursive;
-    color: #ffffff;
-    background: none;
-    border: none;
-    padding: 0 12px;
-    margin: 0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    box-shadow: none;
-    outline: none;
-    transition: color 0.2s;
-    text-decoration: none;
+    font-size: 2.2rem;
+    margin-bottom: 18px;
+    color: #090909;
 }
 
-.header-btn:focus,
-.header-btn:hover,
-.header-btn:active {
-    color: #ffd700;
-    background: none;
-    border: none;
-    outline: none;
-    box-shadow: none;
-    text-decoration: underline;
-}
-
-/* ---------- COMMENTS SECTION ---------- */
+/* Each individual comment box */
 .comment {
-    margin: 20px 0px 20px 20px;
+    margin: 0 0 18px 0;
+    padding: 0;
+}
+
+/* Comment metadata (author, date, icons) */
+.comment-meta {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 4px;
+    display: flex;
+    gap: 18px;
+    align-items: center;
+}
+
+/* Comment author and text styling */
+.comment-author {
+    font-weight: bold;
+    color: #222;
+}
+
+.comment-date {
+    color: #888;
+    display: block;
+    margin-top: 2px;
+}
+
+.comment-text {
+    font-size: 1.25rem;
+    color: #222;
+    margin-bottom: 8px;
+}
+
+/* Separator line between comments */
+.comment-separator {
+    border: none;
+    border-top: 1px solid #e0e0e0;
+    margin: 18px 0;
 }
