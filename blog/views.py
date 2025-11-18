@@ -99,7 +99,9 @@ def add_comment_to_post(request, pk):
                     {"post": post, "user": request.user},
                 )
 
-            return redirect(f"post_detail", pk=post.pk) + "#comments-part"
+            # Redirect to post detail with anchor
+            url = reverse('post_detail', kwargs={'pk': post.pk}) + '#comments-part'
+            return HttpResponseRedirect(url)
 
         # validation failed – fallback full page (non-AJAX)
         return render(request, "blog/add_comment_to_post.html", {"form": form})
