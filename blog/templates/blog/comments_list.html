@@ -18,11 +18,12 @@
 <!-- ---------- MAIN COMMENTS LOOP ---------- -->
 {% for comment in post.comments.all %}
 {% if not comment.parent %}
-{% if user.is_authenticated %}
+{% if user.is_authenticated or comment.approved_comment %}
 <div class="comment">
     <div class="comment-meta" style="display:flex;align-items:center;gap:16px;">
         <strong>From:</strong> {{ comment.author }}
         <span class="comment-date">{{ comment.created_date|date:"M d, Y, g:i a" }}</span>
+        {% if user.is_authenticated %}
         {% if not comment.approved_comment %}
         <button type="button" class="btn btn-sm btn-outline-success js-comment-action" data-method="POST"
             data-url="{% url 'comment_approve' pk=comment.pk %}" title="Approve">
@@ -41,111 +42,13 @@
                 <path
                     d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5.5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6zm3 .5a.5.5 0 0 1 .5-.5.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6z" />
                 <path fill-rule="evenodd"
-                    d="M14.5 3a1 1 0 0 1-1-1V1a1 1 0 0 0-1-1h-7a1 1 0 0 0-1 1v1a1 1 0 0 1-1 1H1v1h14V3h-1.5zm-1-1V1h-7v1h7zM2.5 4v9a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2V4h-11zm11 9a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1V4h9v9z" />
+                    d="M14.5 3a1 1 0 0 1-1-1V1a1 1 0 0 0-1-1h-7a1 1 0 0 0-1-1v1a1 1 0 0 1-1 1H1v1h14V3h-1.5zm-1-1V1h-7v1h7zM2.5 4v9a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2V4h-11zm11 9a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1V4h9v9z" />
             </svg>
         </button>
         {% endif %}
-    </div>
-    <div class="comment-text">{{ comment.text }}</div>
-
-    <!-- REPLIES SECTION -->
-    {% with replies=comment.replies.all|dictsort:"created_date" %}
-    {% if replies %}
-    <div class="comment-replies" style="margin-left:32px;">
-        {% for reply in replies|slice:":2" %}
-        <div class="reply">
-            <div class="reply-meta" style="display:flex;align-items:center;gap:12px;">
-                <strong>Reply from:</strong> {{ reply.author }}
-                <span class="reply-date">{{ reply.created_date|date:"M d, Y, g:i a" }}</span>
-            </div>
-            <div class="reply-text">{{ reply.text }}</div>
-        </div>
-        {% endfor %}
-
-        <!-- Show "More replies" toggle if >2 replies -->
-        {% if replies|length > 2 %}
-        <button type="button" class="btn btn-sm btn-outline-primary show-more-replies"
-            onclick="this.nextElementSibling.style.display='block';this.style.display='none';">More replies</button>
-        <div class="more-replies" style="display:none;">
-            {% for reply in replies|slice:"2:" %}
-            <div class="reply">
-                <div class="reply-meta" style="display:flex;align-items:center;gap:12px;">
-                    <strong>Reply from:</strong> {{ reply.author }}
-                    <span class="reply-date">{{ reply.created_date|date:"M d, Y, g:i a" }}</span>
-                </div>
-                <div class="reply-text">{{ reply.text }}</div>
-            </div>
-            {% endfor %}
-        </div>
         {% endif %}
     </div>
-    {% endif %}
-    {% endwith %}
-
-    <!-- REPLY FORM (only for posted/approved comments) -->
-    {% if comment.approved_comment %}
-    <form method="POST" action="{% url 'add_reply_to_comment' pk=comment.pk %}" class="reply-form"
-        style="margin-left:32px; margin-top:8px;">
-        {% csrf_token %}
-        <input type="text" name="author" placeholder="Your name" required style="margin-right:8px;">
-        <input type="text" name="text" placeholder="Reply..." required style="margin-right:8px;">
-        <button type="submit" class="btn btn-sm btn-outline-success">Reply</button>
-    </form>
-    {% endif %}
-</div>
-{% if not forloop.last %}
-<hr class="comment-separator">
-{% endif %}
-{% elif comment.approved_comment %}
-<div class="comment">
-    <div class="comment-meta" style="display:flex;align-items:center;gap:16px;">
-        <strong>From:</strong> {{ comment.author }}
-        <span class="comment-date">{{ comment.created_date|date:"M d, Y, g:i a" }}</span>
-    </div>
     <div class="comment-text">{{ comment.text }}</div>
-
-    <!-- REPLIES SECTION -->
-    {% with replies=comment.replies.all|dictsort:"created_date" %}
-    {% if replies %}
-    <div class="comment-replies" style="margin-left:32px;">
-        {% for reply in replies|slice:":2" %}
-        <div class="reply">
-            <div class="reply-meta" style="display:flex;align-items:center;gap:12px;">
-                <strong>Reply from:</strong> {{ reply.author }}
-                <span class="reply-date">{{ reply.created_date|date:"M d, Y, g:i a" }}</span>
-            </div>
-            <div class="reply-text">{{ reply.text }}</div>
-        </div>
-        {% endfor %}
-
-        <!-- Show "More replies" toggle if >2 replies -->
-        {% if replies|length > 2 %}
-        <button type="button" class="btn btn-sm btn-outline-primary show-more-replies"
-            onclick="this.nextElementSibling.style.display='block';this.style.display='none';">More replies</button>
-        <div class="more-replies" style="display:none;">
-            {% for reply in replies|slice:"2:" %}
-            <div class="reply">
-                <div class="reply-meta" style="display:flex;align-items:center;gap:12px;">
-                    <strong>Reply from:</strong> {{ reply.author }}
-                    <span class="reply-date">{{ reply.created_date|date:"M d, Y, g:i a" }}</span>
-                </div>
-                <div class="reply-text">{{ reply.text }}</div>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-    </div>
-    {% endif %}
-    {% endwith %}
-
-    <!-- REPLY FORM (only for posted/approved comments) -->
-    <form method="POST" action="{% url 'add_reply_to_comment' pk=comment.pk %}" class="reply-form"
-        style="margin-left:32px; margin-top:8px;">
-        {% csrf_token %}
-        <input type="text" name="author" placeholder="Your name" required style="margin-right:8px;">
-        <input type="text" name="text" placeholder="Reply..." required style="margin-right:8px;">
-        <button type="submit" class="btn btn-sm btn-outline-success">Reply</button>
-    </form>
 </div>
 {% if not forloop.last %}
 <hr class="comment-separator">

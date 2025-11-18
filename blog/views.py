@@ -99,8 +99,12 @@ def add_comment_to_post(request, pk):
                     {"post": post, "user": request.user},
                 )
 
-            # Redirect to post detail with anchor
-            url = reverse('post_detail', kwargs={'pk': post.pk}) + '#comments-part'
+            # Redirect to post detail (no anchor for unauthenticated users)
+            url = reverse("post_detail", kwargs={"pk": post.pk})
+            if request.user.is_authenticated:
+                # Only add anchor if the request is AJAX (moderation convenience)
+                if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                    url += "#comments-part"
             return HttpResponseRedirect(url)
 
         # validation failed – fallback full page (non-AJAX)
