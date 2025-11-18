@@ -10,156 +10,155 @@
 {% block content %}
 <!-- ===================== POST SECTION ===================== -->
 <div class="post-article-container">
-  <h1>{{ post.title }}</h1>
-  <div class="date">{{ post.published_date }}</div>
-  <p>{{ post.text|linebreaksbr }}</p>
+    <h1>{{ post.title }}</h1>
+    <div class="date">{{ post.published_date }}</div>
+    <p>{{ post.text|linebreaksbr }}</p>
 
-  <!-- Actions visible only to authenticated users -->
-  <div class="actions-row">
-    {% if user.is_authenticated %}
-      {% if not post.published_date %}
+    <!-- Actions visible only to authenticated users -->
+    <div class="actions-row">
+        {% if user.is_authenticated %}
+        {% if not post.published_date %}
         <form method="post" action="{% url 'post_publish' pk=post.pk %}" style="display:inline;">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-secondary" title="Publish">
-            {% include './icons/file-earmark-plus.svg' %} Publish
-          </button>
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary" title="Publish">
+                {% include './icons/file-earmark-plus.svg' %} Publish
+            </button>
         </form>
-      {% endif %}
-      <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}" title="Edit">
-        {% include './icons/pencil-fill.svg' %}
-      </a>
-      <form method="post" action="{% url 'post_remove' pk=post.pk %}" style="display:inline;">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-secondary" title="Delete">
-          {% include './icons/trash-fill.svg' %}
-        </button>
-      </form>
-    {% endif %}
-  </div>
+        {% endif %}
+        <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}" title="Edit">
+            {% include './icons/pencil-fill.svg' %}
+        </a>
+        <form method="post" action="{% url 'post_remove' pk=post.pk %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary" title="Delete">
+                {% include './icons/trash-fill.svg' %}
+            </button>
+        </form>
+        {% endif %}
+    </div>
 </div>
 
 <hr>
 
 <!-- ===================== COMMENT MODAL ===================== -->
 <div class="modal fade" id="addCommentModal" tabindex="-1" aria-labelledby="addCommentModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <!-- unique id + shared class -->
-      <form id="comment-form-modal" class="js-comment-form" method="POST" action="{% url 'add_comment_to_post' pk=post.pk %}">
-        <div class="modal-header">
-          <h5 class="modal-title" id="addCommentModalLabel">New comment</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- unique id + shared class -->
+            <form id="comment-form-modal" class="js-comment-form" method="POST"
+                action="{% url 'add_comment_to_post' pk=post.pk %}">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCommentModalLabel">New comment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-secondary">Send</button>
+                </div>
+            </form>
         </div>
-        <div class="modal-body">
-          {% csrf_token %}
-          {{ form.as_p }}
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-secondary">Send</button>
-        </div>
-      </form>
     </div>
-  </div>
 </div>
 
 <!-- ===================== COMMENTS SECTION ===================== -->
 <div id="comments-part">
-  <div id="comments" class="comments-section">
-    <h2>Comments</h2>
+    <div id="comments" class="comments-section">
+        <h2>Comments</h2>
 
-    <div id="comments-list">
-      {% include 'blog/comments_list.html' %}
+        <div id="comments-list">
+            {% include 'blog/comments_list.html' %}
+        </div>
     </div>
-  </div>
 </div>
 
 <!-- ===================== AJAX HANDLERS ===================== -->
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const listEl = document.getElementById('comments-list');
-  const sectionEl = document.getElementById('comments-part');
+    document.addEventListener('DOMContentLoaded', () => {
+        const listEl = document.getElementById('comments-list');
+        const sectionEl = document.getElementById('comments-part');
 
-  // Keep viewport anchored on comments after each update
-  function stayInComments() {
-    if (sectionEl) sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  // ADD COMMENT (works for inline + modal via shared class)
-  document.querySelectorAll('.js-comment-form').forEach((form) => {
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const res = await fetch(form.action, {
-        method: form.method,
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        body: new FormData(form)
-      });
-      if (res.ok) {
-        listEl.innerHTML = await res.text();
-        form.reset();
-        const modalEl = document.getElementById('addCommentModal');
-        if (modalEl && window.bootstrap) {
-          const modal = window.bootstrap.Modal.getInstance(modalEl);
-          if (modal) modal.hide();
+        // Keep viewport anchored on comments after each update
+        function stayInComments() {
+            if (sectionEl) sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-        stayInComments();
-      }
+
+        // ADD COMMENT (works for inline + modal via shared class)
+        document.querySelectorAll('.js-comment-form').forEach((form) => {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const res = await fetch(form.action, {
+                    method: form.method,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    body: new FormData(form)
+                });
+                if (res.ok) {
+                    listEl.innerHTML = await res.text();
+                    form.reset();
+                    const modalEl = document.getElementById('addCommentModal');
+                    if (modalEl && window.bootstrap) {
+                        const modal = window.bootstrap.Modal.getInstance(modalEl);
+                        if (modal) modal.hide();
+                    }
+                    stayInComments();
+                }
+            });
+        });
+
+        // REPLY TO COMMENT (AJAX, stays in place, works for all forms)
+        document.addEventListener('submit', async (e) => {
+            const form = e.target.closest('.reply-form');
+            if (!form) return;
+            e.preventDefault();
+            const res = await fetch(form.action, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': getCookie('csrftoken') },
+                body: new FormData(form)
+            });
+            if (res.ok) {
+                listEl.innerHTML = await res.text();
+                stayInComments();
+            }
+        });
+
+        // ------------------- APPROVE / DELETTE ---------------
+        document.addEventListener('click', async (e) => {
+            const actionEl = e.target.closest('.js-comment-action');
+            if (!actionEl) return;
+
+            e.preventDefault();
+
+            const url = actionEl.dataset.url;
+            const method = (actionEl.dataset.method || 'GET').toUpperCase();
+
+            const headers = { 'X-Requested-With': 'XMLHttpRequest' };
+            let body = null;
+
+            if (method === 'POST') {
+                headers['X-CSRFToken'] = getCookie('csrftoken');
+                body = new FormData();
+            }
+
+            const res = await fetch(url, { method, headers, body });
+            if (res.ok) {
+                listEl.innerHTML = await res.text();
+                stayInComments();
+            }
+        });
+
+        //------------------- CSFR helper -------------------
+        function getCookie(name) {
+            let c = document.cookie ? document.cookie.split(';') : [];
+            for (let i = 0; i < c.length; i++) {
+                let x = c[i].trim();
+                if (x.substring(0, name.length + 1) === (name + '=')) {
+                    return decodeURIComponent(x.substring(name.length + 1));
+                }
+            }
+            return null;
+        }
     });
-  });
-
-    // REPLY TO COMMENT (AJAX, stays in place, works for all forms)
-    document.addEventListener('submit', async (e) => {
-      const form = e.target.closest('.reply-form');
-      if (!form) return;
-      e.preventDefault();
-      const res = await fetch(form.action, {
-        method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': getCookie('csrftoken') },
-        body: new FormData(form)
-      });
-      if (res.ok) {
-        listEl.innerHTML = await res.text();
-        stayInComments();
-      }
-    });
-
-  // ------------------- APPROVE / DELETTE ---------------
-  document.addEventListener('click', async (e) => {
-    const actionEl = e.target.closest('.js-comment-action');
-    if (!actionEl) return;
-
-    e.preventDefault();
-
-    const url = actionEl.dataset.url;
-    const method = (actionEl.dataset.method || 'GET').toUpperCase();
-
-    const headers = { 'X-Requested-With': 'XMLHttpRequest' };
-    let body = null;
-
-    if (method === 'POST') {
-      headers['X-CSRFToken'] = getCookie('csrftoken');
-      body = new FormData();
-    }
-
-    const res = await fetch(url, { method, headers, body });
-    if (res.ok) {
-      listEl.innerHTML = await res.text();
-      stayInComments();
-    }
-  });
-
-  //------------------- CSFR helper -------------------
-  function getCookie(name) {
-    let c = document.cookie ? document.cookie.split(';') : [];
-    for (let i = 0; i < c.length; i++) {
-      let x = c[i].trim();
-      if (x.substring(0, name.length + 1) === (name + '=')) {
-        return decodeURIComponent(x.substring(name.length + 1));
-      }
-    }
-    return null;
-  }
-});
 </script>
 {% endblock %}
-
-

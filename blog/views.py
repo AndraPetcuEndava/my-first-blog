@@ -7,21 +7,27 @@ from django.views.decorators.http import require_POST
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 
+
 # LIST VIEW – show published posts on the homepage
 def post_list(request):
-    posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('-published_date')
-    return render(request, 'blog/post_list.html', {'posts': posts})
+    posts = Post.objects.filter(published_date__lte=timezone.now()).order_by(
+        "-published_date"
+    )
+    return render(request, "blog/post_list.html", {"posts": posts})
+
 
 # DETAIL VIEW – show a single post when its title is clicked
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    return render(request, 'blog/post_detail.html', {'post': post})
+    return render(request, "blog/post_detail.html", {"post": post})
+
 
 # Get posts that do NOT have a published_date (drafts only)
 @login_required
 def post_draft_list(request):
-    posts = Post.objects.filter(published_date__isnull=True).order_by('-created_date')
-    return render(request, 'blog/post_draft_list.html', {'posts': posts})
+    posts = Post.objects.filter(published_date__isnull=True).order_by("-created_date")
+    return render(request, "blog/post_draft_list.html", {"posts": posts})
+
 
 # NEW POST VIEW – create a new blog post (draft by default)
 @login_required
@@ -32,10 +38,11 @@ def post_new(request):
             post = form.save(commit=False)
             post.author = request.user
             post.save()
-            return redirect('post_draft_list')
+            return redirect("post_draft_list")
     else:
         form = PostForm()
-    return render(request, 'blog/post_edit.html', {'form': form})
+    return render(request, "blog/post_edit.html", {"form": form})
+
 
 # EDIT POST VIEW – update an existing blog post
 @login_required
@@ -47,10 +54,11 @@ def post_edit(request, pk):
             post = form.save(commit=False)
             post.author = request.user
             post.save()
-            return redirect('post_detail', pk=post.pk)
+            return redirect("post_detail", pk=post.pk)
     else:
         form = PostForm(instance=post)
-    return render(request, 'blog/post_edit.html', {'form': form})
+    return render(request, "blog/post_edit.html", {"form": form})
+
 
 # PUBLISH POST VIEW – publish a blog post
 @login_required
@@ -58,7 +66,8 @@ def post_edit(request, pk):
 def post_publish(request, pk):
     post = get_object_or_404(Post, pk=pk)
     post.publish()
-    return redirect('post_detail', pk=pk)
+    return redirect("post_detail", pk=pk)
+
 
 # DELETE POST VIEW – delete a blog post
 @login_required
@@ -68,7 +77,8 @@ def post_remove(request, pk):
     # keep published flag before delete for redirect
     was_published = bool(post.published_date)
     post.delete()
-    return redirect('post_list' if was_published else 'post_draft_list')
+    return redirect("post_list" if was_published else "post_draft_list")
+
 
 # Add a comment to a post
 def add_comment_to_post(request, pk):
@@ -82,17 +92,21 @@ def add_comment_to_post(request, pk):
             comment.save()
 
             # AJAX: return only the list fragment
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return render(request, 'blog/comments_list.html', {'post': post, 'user': request.user})
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return render(
+                    request,
+                    "blog/comments_list.html",
+                    {"post": post, "user": request.user},
+                )
 
-            from django.urls import reverse
-            return HttpResponseRedirect(reverse('post_detail', args=[post.pk]) + '#comments-part')
+            return redirect(f"post_detail", pk=post.pk) + "#comments-part"
 
         # validation failed – fallback full page (non-AJAX)
-        return render(request, 'blog/add_comment_to_post.html', {'form': form})
+        return render(request, "blog/add_comment_to_post.html", {"form": form})
     else:
         form = CommentForm()
-        return render(request, 'blog/add_comment_to_post.html', {'form': form})
+        return render(request, "blog/add_comment_to_post.html", {"form": form})
+
 
 # Approve a comment (make it visible)
 @login_required
@@ -103,10 +117,13 @@ def comment_approve(request, pk):
     comment.save()
     post = comment.post
 
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return render(request, 'blog/comments_list.html', {'post': post, 'user': request.user})
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return render(
+            request, "blog/comments_list.html", {"post": post, "user": request.user}
+        )
 
-    return redirect('post_detail', pk=post.pk)
+    return redirect("post_detail", pk=post.pk)
+
 
 # Remove a comment (delete from DB)
 @login_required
@@ -116,21 +133,27 @@ def comment_remove(request, pk):
     post = comment.post
     comment.delete()
 
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return render(request, 'blog/comments_list.html', {'post': post, 'user': request.user})
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return render(
+            request, "blog/comments_list.html", {"post": post, "user": request.user}
+        )
 
-    return HttpResponseRedirect(reverse('post_detail', args=[post.pk]))
+    return HttpResponseRedirect(reverse("post_detail", args=[post.pk]))
+
 
 # Add a reply to a comment
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+
+
 @csrf_exempt
 def add_reply_to_comment(request, pk):
     from .models import Comment
+
     parent_comment = get_object_or_404(Comment, pk=pk)
     if request.method == "POST":
-        author = request.POST.get('author')
-        text = request.POST.get('text')
+        author = request.POST.get("author")
+        text = request.POST.get("text")
         if author and text:
             # Create reply comment
             reply = Comment.objects.create(
@@ -143,7 +166,11 @@ def add_reply_to_comment(request, pk):
             reply.parent = parent_comment
             reply.save()
         # AJAX: return updated comments list
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return render(request, 'blog/comments_list.html', {'post': parent_comment.post, 'user': request.user})
-        return redirect('post_detail', pk=parent_comment.post.pk)
-    return redirect('post_detail', pk=parent_comment.post.pk)
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return render(
+                request,
+                "blog/comments_list.html",
+                {"post": parent_comment.post, "user": request.user},
+            )
+        return redirect("post_detail", pk=parent_comment.post.pk)
+    return redirect("post_detail", pk=parent_comment.post.pk)

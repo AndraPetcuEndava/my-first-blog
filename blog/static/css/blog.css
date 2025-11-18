@@ -4,12 +4,16 @@
    Affects all <h1>, <h2>, <h3>, <h4> tags and linked titles.
    Changes their font to 'Lobster' and applies brand color.
 ========================================================= */
-h1 a, h2 a {
+h1 a,
+h2 a {
     color: #FF5640;
     font-family: 'Lobster';
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
     font-family: 'Lobster', cursive;
 }
 
@@ -111,8 +115,8 @@ h1, h2, h3, h4 {
 }
 
 /* Layout for post date and action icons */
-.post > .date,
-.post > .actions {
+.post>.date,
+.post>.actions {
     display: flex;
     gap: 1px;
     align-items: center;
@@ -338,7 +342,7 @@ h1, h2, h3, h4 {
     border-radius: 18px;
     padding: 32px;
     margin-bottom: 40px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .comments-section h2 {

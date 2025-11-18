@@ -4,11 +4,11 @@ The same template is shared by both "new post" and "edit post" views. -->
 {% extends 'blog/base.html' %}
 
 {% block content %}
-    <h2>New post</h2>
+<h2>New post</h2>
 
-     <!-- POST CREATION / EDIT FORM -->
-    <form method="POST" class="post-form">{% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="save btn btn-secondary">Save</button>
-    </form>
+<!-- POST CREATION / EDIT FORM -->
+<form method="POST" class="post-form">{% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="save btn btn-secondary">Save</button>
+</form>
 {% endblock %}

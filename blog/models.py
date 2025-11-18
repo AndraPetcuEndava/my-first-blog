@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 import re
 
+
 # ------------------------------
 # BLOG POST MODEL
 # ------------------------------
@@ -25,8 +26,8 @@ class Post(models.Model):
 
     def preview_sentence(self, count=3):
         # Split text into sentences ending with a dot
-        sentences = re.findall(r'[^.]*\.', self.text)
-        preview = ''.join(sentences[:count]).strip()
+        sentences = re.findall(r"[^.]*\.", self.text)
+        preview = "".join(sentences[:count]).strip()
         if preview:
             return preview
         return self.text[:300]
@@ -38,16 +39,22 @@ class Post(models.Model):
     def approved_comments_count(self):
         return self.comments.filter(approved_comment=True).count()
 
+
 # ------------------------------
 # COMMENT MODEL
 # ------------------------------
 
+
 class Comment(models.Model):
     # Each comment belongs to a specific Post
-    post = models.ForeignKey('blog.Post', on_delete=models.CASCADE, related_name='comments')
+    post = models.ForeignKey(
+        "blog.Post", on_delete=models.CASCADE, related_name="comments"
+    )
 
     # Replies: parent comment (null for top-level)
-    parent = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
+    parent = models.ForeignKey(
+        "self", null=True, blank=True, related_name="replies", on_delete=models.CASCADE
+    )
 
     # Basic comment info
     author = models.CharField(max_length=200)
@@ -68,7 +75,8 @@ class Comment(models.Model):
         return self.text[:50]
 
     class Meta:
-        ordering = ['-created_date']  # newest first
+        ordering = ["-created_date"]  # newest first
+
 
 # Return all approved comments for a given Post instance.
 def approved_comments(self):

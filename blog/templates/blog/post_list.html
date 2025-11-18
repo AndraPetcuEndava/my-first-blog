@@ -1,35 +1,36 @@
 <!-- This template displays all published posts from the database.
 Only posts that have a non-empty 'published_date' are shown. -->
- 
+
 {% extends 'blog/base.html' %}
 
 {% block content %}
-    {% for post in posts %}
-        <div class="post">
-            <!-- POST HEADER: title and publish date -->
-            <h1><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h1>
-            <div class="date">
-                {{ post.published_date }}
-            </div>
+{% for post in posts %}
+<div class="post">
+    <!-- POST HEADER: title and publish date -->
+    <h1><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h1>
+    <div class="date">
+        {{ post.published_date }}
+    </div>
 
-            <!-- POST PREVIEW: short snippet + Read more button -->
-            <p style="display: flex; align-items: center; flex-wrap: wrap;">
-                <span>
-                    {{ post.preview_sentence }}
-                    {% if post.text|length > post.preview_sentence|length %}
-                        <button id="readmore-{{ post.pk }}" onclick="window.location.href='{% url 'post_detail' pk=post.pk %}'" class="btn btn-secondary" style="display:inline; margin-left:8px;">Read more</button>
-                    {% endif %}
-                </span>
-            </p>
+    <!-- POST PREVIEW: short snippet + Read more button -->
+    <p style="display: flex; align-items: center; flex-wrap: wrap;">
+        <span>
+            {{ post.preview_sentence }}
+            {% if post.text|length > post.preview_sentence|length %}
+            <button id="readmore-{{ post.pk }}" onclick="window.location.href='{% url 'post_detail' pk=post.pk %}'"
+                class="btn btn-secondary" style="display:inline; margin-left:8px;">Read more</button>
+            {% endif %}
+        </span>
+    </p>
 
-            <!-- COMMENTS SECTION: shows comment count (approved vs total) -->
-            <span style="color: #6f6f6f; text-decoration: none; cursor:default;">Comments:
-                {% if user.is_authenticated %}
-                    {{ post.comments.count }}
-                {% else %}
-                    {{ post.approved_comments_count }}
-                {% endif %}
-            </span>
-        </div>
-    {% endfor %}
+    <!-- COMMENTS SECTION: shows comment count (approved vs total) -->
+    <span style="color: #6f6f6f; text-decoration: none; cursor:default;">Comments:
+        {% if user.is_authenticated %}
+        {{ post.comments.count }}
+        {% else %}
+        {{ post.approved_comments_count }}
+        {% endif %}
+    </span>
+</div>
+{% endfor %}
 {% endblock content %}

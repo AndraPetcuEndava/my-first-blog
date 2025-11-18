@@ -14,8 +14,7 @@
 <!-- NEW COMMENT FORM SECTION -->
 <h1>New comment</h1>
 <form method="POST" class="post-form">{% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="save btn btn-secondary">Send</button>
+  {{ form.as_p }}
+  <button type="submit" class="save btn btn-secondary">Send</button>
 </form>
 {% endblock %}
-
