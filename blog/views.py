@@ -33,7 +33,7 @@ def post_draft_list(request):
 @login_required
 def post_new(request):
     if request.method == "POST":
-        form = PostForm(request.POST)
+        form = PostForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
@@ -49,7 +49,7 @@ def post_new(request):
 def post_edit(request, pk):
     post = get_object_or_404(Post, pk=pk)
     if request.method == "POST":
-        form = PostForm(request.POST, instance=post)
+        form = PostForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
@@ -98,6 +98,13 @@ def add_comment_to_post(request, pk):
                     "blog/comments_list.html",
                     {"post": post, "user": request.user},
                 )
+
+            # Add notification for all users after comment submission
+            from django.contrib import messages
+
+            messages.success(
+                request, "Your comment was submitted and is awaiting admin approval."
+            )
 
             # Redirect to post detail (no anchor for unauthenticated users)
             url = reverse("post_detail", kwargs={"pk": post.pk})

@@ -2,35 +2,37 @@
 Only posts that have a non-empty 'published_date' are shown. -->
 
 {% extends 'blog/base.html' %}
+{% load static %}
 
 {% block content %}
-{% for post in posts %}
-<div class="post">
-    <!-- POST HEADER: title and publish date -->
-    <h1><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h1>
-    <div class="date">
-        {{ post.published_date }}
+<div class="container mt-5">
+    <div class="row">
+        {% for post in posts %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm" style="border-radius: 16px;">
+                        {% if post.image %}
+                            <img src="{{ post.image.url }}" class="card-img-top" alt="Post image" style="height: 180px; object-fit: cover; border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                        {% else %}
+                            <img src="{% static 'blog/img/post1.png' %}" class="card-img-top" alt="Default image" style="height: 180px; object-fit: cover; border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ post.title }}</h5>
+                            {% if post.preview_sentence %}
+                                <p class="card-text">{{ post.preview_sentence }}</p>
+                            {% endif %}
+                            <p class="card-text text-muted">{{ post.published_date|date:"M d, Y, g:i a" }}</p>
+                            <p class="card-text"><small>
+                                {% if user.is_authenticated %}
+                                    {{ post.comments.count }} comment{{ post.comments.count|pluralize }}
+                                {% else %}
+                                    {{ post.approved_comments_count }} comment{{ post.approved_comments_count|pluralize }}
+                                {% endif %}
+                            </small></p>
+                            <a href="{% url 'post_detail' pk=post.pk %}" class="btn btn-secondary">Read more</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
     </div>
-
-    <!-- POST PREVIEW: short snippet + Read more button -->
-    <p style="display: flex; align-items: center; flex-wrap: wrap;">
-        <span>
-            {{ post.preview_sentence }}
-            {% if post.text|length > post.preview_sentence|length %}
-            <button id="readmore-{{ post.pk }}" onclick="window.location.href='{% url 'post_detail' pk=post.pk %}'"
-                class="btn btn-secondary" style="display:inline; margin-left:8px;">Read more</button>
-            {% endif %}
-        </span>
-    </p>
-
-    <!-- COMMENTS SECTION: shows comment count (approved vs total) -->
-    <span style="color: #6f6f6f; text-decoration: none; cursor:default;">Comments:
-        {% if user.is_authenticated %}
-        {{ post.comments.count }}
-        {% else %}
-        {{ post.approved_comments_count }}
-        {% endif %}
-    </span>
 </div>
-{% endfor %}
 {% endblock content %}

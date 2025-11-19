@@ -11,9 +11,11 @@ class Post(models.Model):
     # Relationship: every Post has one author (a User)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
+
     # Post content fields
     title = models.CharField(max_length=200)
     text = models.TextField()
+    image = models.ImageField(upload_to='post_images/', blank=True, null=True)
 
     # Timestamps
     created_date = models.DateTimeField(default=timezone.now)

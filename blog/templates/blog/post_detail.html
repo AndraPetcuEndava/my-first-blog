@@ -8,6 +8,21 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
+{% if messages %}
+<div class="container mt-3" id="message-container">
+    {% for message in messages %}
+    <div class="alert alert-info" role="alert" id="message-alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+<script>
+    setTimeout(function () {
+        var msg = document.getElementById('message-container');
+        if (msg) msg.style.display = 'none';
+    }, 3000);
+</script>
+{% endif %}
 <!-- ===================== POST SECTION ===================== -->
 <div class="post-article-container">
     <h1>{{ post.title }}</h1>
