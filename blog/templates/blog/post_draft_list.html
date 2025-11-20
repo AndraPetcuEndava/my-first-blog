@@ -10,7 +10,7 @@ Allows the author to publish, edit, or delete each draft. -->
         <!-- POST CONTENT: title and text preview -->
         <div class="post-content">
             <h2>{{ post.title }}</h2>
-            <div>{{ post.text|striptags|truncatechars:500 }}</div>
+            <div>{{ post.text|striptags|truncatechars:500|safe }}</div>
         </div>
         <!-- ACTION BUTTONS: publish, edit, delete -->
         <div class="actions-row">
