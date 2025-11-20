@@ -60,11 +60,13 @@
 <!-- Add spacing between post details and comments section -->
 <div style="height: 32px;"></div>
 
+{% if post.published_date %}
 <div id="comments-part">
     <div id="comments-list">
         {% include 'blog/comments_list.html' %}
     </div>
 </div>
+{% endif %}
 
 <!-- ===================== COMMENT MODAL ===================== -->
 <div class="modal fade" id="addCommentModal" tabindex="-1" aria-labelledby="addCommentModalLabel" aria-hidden="true">

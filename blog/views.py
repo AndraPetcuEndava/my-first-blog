@@ -66,7 +66,7 @@ def post_edit(request, pk):
 def post_publish(request, pk):
     post = get_object_or_404(Post, pk=pk)
     post.publish()
-    return redirect("post_detail", pk=pk)
+    return redirect("post_list")
 
 
 # DELETE POST VIEW – delete a blog post
