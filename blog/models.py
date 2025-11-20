@@ -11,11 +11,12 @@ class Post(models.Model):
     # Relationship: every Post has one author (a User)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
-
     # Post content fields
     title = models.CharField(max_length=200)
-    text = models.TextField()
-    image = models.ImageField(upload_to='post_images/', blank=True, null=True)
+    from ckeditor_uploader.fields import RichTextUploadingField
+
+    text = RichTextUploadingField()
+    image = models.ImageField(upload_to="post_images/", blank=True, null=True)
 
     # Timestamps
     created_date = models.DateTimeField(default=timezone.now)
@@ -26,13 +27,20 @@ class Post(models.Model):
         self.published_date = timezone.now()
         self.save()
 
-    def preview_sentence(self, count=3):
-        # Split text into sentences ending with a dot
-        sentences = re.findall(r"[^.]*\.", self.text)
-        preview = "".join(sentences[:count]).strip()
-        if preview:
-            return preview
-        return self.text[:300]
+    def preview_html(self, word_limit=20):
+        from django.utils.html import strip_tags
+        from django.utils.safestring import mark_safe
+        import re
+
+        # Remove HTML tags for word count, but return HTML for display
+        text = self.text
+        # Strip leading/trailing whitespace and blank lines
+        text_stripped = re.sub(r"^(\s|&nbsp;)+", "", strip_tags(text))
+        words = text_stripped.split()
+        if len(words) > word_limit:
+            truncated = " ".join(words[:word_limit]) + "..."
+            return mark_safe(truncated)
+        return mark_safe(text_stripped)
 
     def __str__(self):
         """Readable representation in admin or shell."""

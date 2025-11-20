@@ -7,12 +7,9 @@ Only posts that have a non-empty 'published_date' are shown. -->
 {% block content %}
 
 <!-- ===== HERO SECTION ===== -->
-<section class="hero-section text-white text-center py-3 full-width-banner">
-    <div class="container py-3" style="max-width: 100vw;">
+<section class="hero-section text-white text-center py-5 full-width-banner">
+    <div class="container py-4" style="width: 100%; margin: 0; overflow-x: hidden;">
         <div class="row justify-content-center align-items-center">
-            <div class="col-md-3">
-                <img src="{% static 'blog/img/logo_feminine.png' %}" alt="Django Girls Logo" style="max-width: 60%; height: auto;">
-            </div>
             <div class="col-md-7 text-start text-md-left">
                 <h1 class="fw-bold" style="font: size 15px;">We inspire women to fall in love with programming.</h1>
                 <p class="lead mb-0" style="font-size: 20px;">
@@ -26,33 +23,51 @@ Only posts that have a non-empty 'published_date' are shown. -->
 <!-- ===== POST LIST SECTION ===== -->
 <div class="container mt-5">
     <div class="row">
+        <!-- New Post Card (always first) -->
+        {% if user.is_authenticated %}
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'post_new' %}" style="text-decoration:none;color:inherit;">
+                <div class="card h-100 shadow-sm d-flex align-items-center justify-content-center"
+                    style="border-radius: 16px; min-height: 350px; background: #f8f9fa;">
+                    <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                        <div style="font-size: 48px; color: #cf6d96; margin-bottom: 16px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor"
+                                class="bi bi-plus-circle" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z" />
+                                <path
+                                    d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                            </svg>
+                        </div>
+                        <h5 class="card-title" style="color: #cf6d96;">Add New Post</h5>
+                        <p class="card-text text-muted">Share your story or announcement!</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endif %}
         {% for post in posts %}
-            <div class="col-md-4 mb-4">
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'post_detail' pk=post.pk %}" style="text-decoration:none;color:inherit;">
                 <div class="card h-100 shadow-sm" style="border-radius: 16px;">
                     {% if post.image %}
-                        <img src="{{ post.image.url }}" class="card-img-top" alt="Post image"
-                             style="height: 180px; object-fit: cover; border-top-left-radius: 16px; border-top-right-radius: 16px;">
-                    {% else %}
-                        <img src="{% static 'blog/img/post1.png' %}" class="card-img-top" alt="Default image"
-                             style="height: 180px; object-fit: cover; border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                    <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}"
+                        style="object-fit:cover; height:200px; border-top-left-radius: 16px; border-top-right-radius: 16px;">
                     {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">{{ post.title }}</h5>
-                        {% if post.preview_sentence %}
-                            <p class="card-text">{{ post.preview_sentence }}</p>
-                        {% endif %}
+                        <p class="card-text">{{ post.preview_html|safe }}</p>
                         <p class="card-text text-muted">{{ post.published_date|date:"M d, Y, g:i a" }}</p>
                         <p class="card-text"><small>
-                            {% if user.is_authenticated %}
+                                {% if user.is_authenticated %}
                                 {{ post.comments.count }} comment{{ post.comments.count|pluralize }}
-                            {% else %}
+                                {% else %}
                                 {{ post.approved_comments_count }} comment{{ post.approved_comments_count|pluralize }}
-                            {% endif %}
-                        </small></p>
-                        <a href="{% url 'post_detail' pk=post.pk %}" class="btn btn-secondary">Read more</a>
+                                {% endif %}
+                            </small></p>
                     </div>
                 </div>
-            </div>
+            </a>
+        </div>
         {% endfor %}
     </div>
 </div>

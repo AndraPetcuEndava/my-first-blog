@@ -1,14 +1,35 @@
+.comment-date {
+    font-size: 15px;
+}
+
+/* Gray color for comment author and text */
+.text-gray {
+    color: #6c757d;
+}
+
 /* Comments section styles moved from comments_list.html */
 .add-comment-btn {
-    margin-bottom:12px; color: #d35400; background: #fff; border: 2px solid #d35400; border-radius: 8px; font-size: 1.25rem; font-family: inherit; font-weight: 400; padding: 8px 24px; transition: background 0.2s, color 0.2s;
+    margin-bottom: 12px;
+    color: #cf6d96;
+    background: #fff;
+    border: 2px solid #cf6d96;
+    border-radius: 8px;
+    font-size: 1.25rem;
+    font-family: inherit;
+    font-weight: 400;
+    padding: 8px 24px;
+    transition: background 0.2s, color 0.2s;
     display: inline-block;
     text-align: center;
     text-decoration: none;
 }
-.add-comment-btn:hover, .add-comment-btn:focus {
-    background: #d35400;
+
+.add-comment-btn:hover,
+.add-comment-btn:focus {
+    background: #cf6d96;
     color: #fff;
 }
+
 /* Prevent comments section from expanding vertically */
 #comments-list {
     min-height: 80px;
@@ -17,11 +38,17 @@
     margin-top: 0;
     margin-bottom: 0;
 }
+
 .comment {
     margin-bottom: 0;
     padding-bottom: 0;
 }
+
 .comment-separator {
     margin-top: 8px;
     margin-bottom: 8px;
+}
+
+.comments-header {
+    color: #6c757d !important;
 }

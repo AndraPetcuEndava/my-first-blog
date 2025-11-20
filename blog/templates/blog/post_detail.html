@@ -8,60 +8,63 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
+<!-- Popup for comment approval notification -->
 {% if messages %}
-<div class="container mt-3" id="message-container">
+<div id="comment-approval-popup" class="alert alert-success text-center"
+    style="position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 9999; min-width: 300px; max-width: 90vw;">
     {% for message in messages %}
-    <div class="alert alert-info" role="alert" id="message-alert">
-        {{ message }}
-    </div>
+    {{ message }}
     {% endfor %}
 </div>
 <script>
     setTimeout(function () {
-        var msg = document.getElementById('message-container');
-        if (msg) msg.style.display = 'none';
-    }, 3000);
+        var popup = document.getElementById('comment-approval-popup');
+        if (popup) popup.style.display = 'none';
+    }, 4000);
 </script>
 {% endif %}
-<!-- ===================== POST SECTION ===================== -->
-<div class="post-article-container">
-    <h1>{{ post.title }}</h1>
-    <div class="date">{{ post.published_date }}</div>
-    <p>{{ post.text|linebreaksbr }}</p>
-
-    <!-- Actions visible only to authenticated users -->
-    <div class="actions-row">
-        {% if user.is_authenticated %}
-        {% if not post.published_date %}
-        <form method="post" action="{% url 'post_publish' pk=post.pk %}" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-secondary" title="Publish">
-                {% include './icons/file-earmark-plus.svg' %} Publish
-            </button>
-        </form>
-        {% endif %}
-        <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}" title="Edit">
-            {% include './icons/pencil-fill.svg' %}
-        </a>
-        <form method="post" action="{% url 'post_remove' pk=post.pk %}" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-secondary" title="Delete">
-                {% include './icons/trash-fill.svg' %}
-            </button>
-        </form>
-        {% endif %}
+<!-- Banner section for post detail -->
+<section class="hero-section text-white py-5 full-width-banner post-detail"
+    style="background: linear-gradient(rgba(25,43,55,0.6), rgba(25,43,55,0.6)), url('/static/blog/img/photo-post_detail.jpg') center/cover no-repeat; border-radius: 0; width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; min-height: 190px;">
+</section>
+<div class="post-article-container" style="overflow-x:hidden;">
+    <div class="w-100 px-5">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <h1 class="text-start" style="margin-bottom: 0;">{{ post.title }}</h1>
+            <div class="actions-row" style="display: flex; gap: 8px;">
+                {% if user.is_authenticated %}
+                {% if not post.published_date %}
+                <form method="post" action="{% url 'post_publish' pk=post.pk %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary" title="Publish">
+                        {% include './icons/file-earmark-plus.svg' %} Publish
+                    </button>
+                </form>
+                {% endif %}
+                <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}" title="Edit">
+                    {% include './icons/pencil-fill.svg' %}
+                </a>
+                <form method="post" action="{% url 'post_remove' pk=post.pk %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary" title="Delete">
+                        {% include './icons/trash-fill.svg' %}
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        <div class="post-text text-start">{{ post.text|safe }}</div>
     </div>
-    {% if not user.is_authenticated %}
-    <script>
-        // If URL contains anchor, remove it for unauthenticated users
-        if (window.location.hash === '#comments-part') {
-            history.replaceState(null, '', window.location.pathname);
-        }
-    </script>
-    {% endif %}
 </div>
 
-<hr>
+<!-- Add spacing between post details and comments section -->
+<div style="height: 32px;"></div>
+
+<div id="comments-part">
+    <div id="comments-list">
+        {% include 'blog/comments_list.html' %}
+    </div>
+</div>
 
 <!-- ===================== COMMENT MODAL ===================== -->
 <div class="modal fade" id="addCommentModal" tabindex="-1" aria-labelledby="addCommentModalLabel" aria-hidden="true">
@@ -76,26 +79,27 @@
                 </div>
                 <div class="modal-body">
                     {% csrf_token %}
-                    {{ form.as_p }}
+                    <h5 class="modal-title" id="addCommentModalLabel">New comment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-secondary">Send</button>
-                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addCommentModalLabel">New comment</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            {% csrf_token %}
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-secondary">Send</button>
+                        </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- ===================== COMMENTS SECTION ===================== -->
-<div id="comments-part">
-    <div id="comments" class="comments-section">
-        <h2>Comments</h2>
-
-        <div id="comments-list">
-            {% include 'blog/comments_list.html' %}
-        </div>
-    </div>
-</div>
 
 <!-- ===================== AJAX HANDLERS ===================== -->
 <script>

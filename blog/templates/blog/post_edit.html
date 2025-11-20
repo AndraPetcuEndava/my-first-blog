@@ -8,7 +8,10 @@ The same template is shared by both "new post" and "edit post" views. -->
 
 <!-- POST CREATION / EDIT FORM -->
 <form method="POST" enctype="multipart/form-data" class="post-form">{% csrf_token %}
-    {{ form.as_p }}
+    {{ form.media }}
+    <p>{{ form.title.label_tag }} {{ form.title }}</p>
+    <p>{{ form.text.label_tag }} {{ form.text }}</p>
+    <p>{{ form.image.label_tag }} {{ form.image }}</p>
     <button type="submit" class="save btn btn-secondary">Save</button>
 </form>
 {% endblock %}
