@@ -5,34 +5,56 @@ Only posts that have a non-empty 'published_date' are shown. -->
 {% load static %}
 
 {% block content %}
+
+<!-- ===== HERO SECTION ===== -->
+<section class="hero-section text-white text-center py-3 full-width-banner">
+    <div class="container py-3" style="max-width: 100vw;">
+        <div class="row justify-content-center align-items-center">
+            <div class="col-md-3">
+                <img src="{% static 'blog/img/logo_feminine.png' %}" alt="Django Girls Logo" style="max-width: 60%; height: auto;">
+            </div>
+            <div class="col-md-7 text-start text-md-left">
+                <h1 class="fw-bold" style="font: size 15px;">We inspire women to fall in love with programming.</h1>
+                <p class="lead mb-0" style="font-size: 20px;">
+                    Short stories, learnings, and wins from the community.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== POST LIST SECTION ===== -->
 <div class="container mt-5">
     <div class="row">
         {% for post in posts %}
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow-sm" style="border-radius: 16px;">
-                        {% if post.image %}
-                            <img src="{{ post.image.url }}" class="card-img-top" alt="Post image" style="height: 180px; object-fit: cover; border-top-left-radius: 16px; border-top-right-radius: 16px;">
-                        {% else %}
-                            <img src="{% static 'blog/img/post1.png' %}" class="card-img-top" alt="Default image" style="height: 180px; object-fit: cover; border-top-left-radius: 16px; border-top-right-radius: 16px;">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm" style="border-radius: 16px;">
+                    {% if post.image %}
+                        <img src="{{ post.image.url }}" class="card-img-top" alt="Post image"
+                             style="height: 180px; object-fit: cover; border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                    {% else %}
+                        <img src="{% static 'blog/img/post1.png' %}" class="card-img-top" alt="Default image"
+                             style="height: 180px; object-fit: cover; border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ post.title }}</h5>
+                        {% if post.preview_sentence %}
+                            <p class="card-text">{{ post.preview_sentence }}</p>
                         {% endif %}
-                        <div class="card-body">
-                            <h5 class="card-title">{{ post.title }}</h5>
-                            {% if post.preview_sentence %}
-                                <p class="card-text">{{ post.preview_sentence }}</p>
+                        <p class="card-text text-muted">{{ post.published_date|date:"M d, Y, g:i a" }}</p>
+                        <p class="card-text"><small>
+                            {% if user.is_authenticated %}
+                                {{ post.comments.count }} comment{{ post.comments.count|pluralize }}
+                            {% else %}
+                                {{ post.approved_comments_count }} comment{{ post.approved_comments_count|pluralize }}
                             {% endif %}
-                            <p class="card-text text-muted">{{ post.published_date|date:"M d, Y, g:i a" }}</p>
-                            <p class="card-text"><small>
-                                {% if user.is_authenticated %}
-                                    {{ post.comments.count }} comment{{ post.comments.count|pluralize }}
-                                {% else %}
-                                    {{ post.approved_comments_count }} comment{{ post.approved_comments_count|pluralize }}
-                                {% endif %}
-                            </small></p>
-                            <a href="{% url 'post_detail' pk=post.pk %}" class="btn btn-secondary">Read more</a>
-                        </div>
+                        </small></p>
+                        <a href="{% url 'post_detail' pk=post.pk %}" class="btn btn-secondary">Read more</a>
                     </div>
                 </div>
-            {% endfor %}
+            </div>
+        {% endfor %}
     </div>
 </div>
+
 {% endblock content %}
