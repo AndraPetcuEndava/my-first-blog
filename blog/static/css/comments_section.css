@@ -10,9 +10,9 @@
 /* Comments section styles moved from comments_list.html */
 .add-comment-btn {
     margin-bottom: 12px;
-    color: #cf6d96;
+    color: #a55c8f;
     background: #fff;
-    border: 2px solid #cf6d96;
+    border: 2px solid #a55c8f;
     border-radius: 8px;
     font-size: 1.25rem;
     font-family: inherit;
@@ -26,7 +26,7 @@
 
 .add-comment-btn:hover,
 .add-comment-btn:focus {
-    background: #cf6d96;
+    background: #a55c8f;
     color: #fff;
 }
 

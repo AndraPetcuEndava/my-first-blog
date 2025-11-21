@@ -14,7 +14,6 @@ class Post(models.Model):
     # Post content fields
     title = models.CharField(max_length=200)
     from ckeditor_uploader.fields import RichTextUploadingField
-
     text = RichTextUploadingField()
     image = models.ImageField(upload_to="post_images/", blank=True, null=True)
 
@@ -87,7 +86,3 @@ class Comment(models.Model):
     class Meta:
         ordering = ["-created_date"]  # newest first
 
-
-# Return all approved comments for a given Post instance.
-def approved_comments(self):
-    return self.comments.filter(approved_comment=True)

@@ -13,7 +13,7 @@ Allows the author to publish, edit, or delete each draft. -->
             <div>{{ post.text|striptags|truncatechars:500|safe }}</div>
         </div>
         <!-- ACTION BUTTONS: publish, edit, delete -->
-        <div class="actions-row">
+        <div class="actions-row" style="margin-top: 50px;">
             <form method="post" action="{% url 'post_publish' pk=post.pk %}" style="display:inline;">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-secondary" title="Publish">

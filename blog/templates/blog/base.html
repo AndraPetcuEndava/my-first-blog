@@ -32,7 +32,9 @@
     <!-- SITE HEADER / NAVIGATION BAR -->
     <!-- Shows "New Post", "Drafts", "Login" and "Log out" buttons based on user authentication status -->
     <div class="header-actions">
+        {% if request.resolver_match.url_name != 'login' %}
         <h1><a href="/">Django Girls Blog</a></h1>
+        {% endif %}
         <div class="header-right">
             {% if user.is_authenticated %}
             <div class="header-new">
@@ -56,11 +58,13 @@
                 </form>
             </div>
             {% else %}
+            {% if request.resolver_match.url_name != 'login' %}
             <div class="header-login">
                 <a href="{% url 'login' %}" class="header-btn">
                     Login
                 </a>
             </div>
+            {% endif %}
             {% endif %}
         </div>
     </div>

@@ -53,6 +53,11 @@ def post_edit(request, pk):
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
+            # Handle image removal
+            if request.POST.get("remove_image") == "1":
+                if post.image:
+                    post.image.delete(save=False)
+                    post.image = None
             post.save()
             return redirect("post_detail", pk=post.pk)
     else:
@@ -115,10 +120,10 @@ def add_comment_to_post(request, pk):
             return HttpResponseRedirect(url)
 
         # validation failed – fallback full page (non-AJAX)
-        return render(request, "blog/add_comment_to_post.html", {"form": form})
+        return render(request, "blog/add_comment_to_post.html", {"form": form, "post": post})
     else:
         form = CommentForm()
-        return render(request, "blog/add_comment_to_post.html", {"form": form})
+        return render(request, "blog/add_comment_to_post.html", {"form": form, "post": post})
 
 
 # Approve a comment (make it visible)
