@@ -4,9 +4,9 @@ The same template is shared by both "new post" and "edit post" views. -->
 {% extends 'blog/base.html' %}
 
 {% block content %}
-<div style="min-height: 80vh; background: #fff; display: flex; align-items: center; justify-content: center; padding: 10px;">
-    <div style="display: flex; gap: 48px; align-items: center; justify-content: center;">
-        <div class="login-card" style="background: #fff; border-radius: 28px; box-shadow: 0 2px 16px rgba(207,109,150,0.08); padding: 48px 48px 36px 48px; max-width: 800px; min-width: 520px; width: 100%; text-align: center;">
+<div style="min-height: 80vh; background: #fff; display: flex; align-items: flex-start; justify-content: center; gap: 48px;">
+    <div class="form-container">
+        <div class="login-card" style="background: #fdf9fc; border-radius: 28px; box-shadow: 0 2px 16px rgba(207,109,150,0.08); padding: 48px 48px 36px 48px; max-width: 800px; min-width: 520px; width: 100%; text-align: center;">
             <h1 style="font-family: 'Lobster', cursive; color: #a55c8f; font-size: 2.2rem; margin-bottom: 8px;">New post</h1>
             <div style="color: #6c757d; font-size: 1.08rem; margin-bottom: 18px;">We love hearing your stories! Share your content with our community!</div>
             <form method="POST" enctype="multipart/form-data" class="post-form" style="text-align:left;">{% csrf_token %}
@@ -20,7 +20,7 @@ The same template is shared by both "new post" and "edit post" views. -->
                     <div style="flex: 1;">{{ form.text }}</div>
                 </div>
                 <div style="margin-bottom: 16px;">
-                    <label for="id_image" style="cursor:pointer; display:inline-block; width: 160px; border: 2px solid #a55c8f; border-radius: 12px; background: #fff; display: flex; align-items: center; justify-content: center; flex-direction: row; padding: 6px 0; font-size: 1rem; color: #a55c8f; margin-bottom: 0;">
+                    <label for="id_image" style="cursor:pointer; display:inline-block; width: 160px; border: 2px solid #a55c8f; border-radius: 10px; background: #fff; display: flex; align-items: center; justify-content: center; flex-direction: row; padding: 6px 0; font-size: 1rem; color: #a55c8f; margin-bottom: 0; box-shadow: none;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#a55c8f" viewBox="0 0 16 16" style="margin-right: 6px;">
                             <rect x="7" y="3" width="2" height="10" rx="1"/>
                             <rect x="3" y="7" width="10" height="2" rx="1"/>
@@ -30,7 +30,7 @@ The same template is shared by both "new post" and "edit post" views. -->
                     </label>
                 </div>
                 <div id="image-preview-container" style="margin-bottom: 16px;">
-                    <span style="display:block; font-weight:500; margin-bottom:6px;">Current image:</span>
+                    <span style="display:block; font-weight:500; margin-bottom:6px; color: #6c757d; ">Current image:</span>
                     <div style="display: flex; flex-direction: column; align-items: flex-start;">
                         <img id="image-preview" src="{% if form.instance.image %}{{ form.instance.image.url }}{% endif %}" alt="Current image"
                             {% if form.instance.image %}
@@ -43,11 +43,11 @@ The same template is shared by both "new post" and "edit post" views. -->
                         <input type="hidden" name="remove_image" id="remove_image" value="0">
                     </div>
                 </div>
-                <button type="submit" class="save btn btn-secondary" style="width: 100%; background: #a55c8f; color: #fff; border-radius: 10px; border: none; font-size: 1.15rem; margin-bottom: 10px;">Save</button>
+                <button type="submit" class="save btn btn-secondary" style="width: 100%; border: 2px solid #a55c8f; color: #a55c8f; background: #fff; border-radius: 10px; font-size: 1.15rem; margin-bottom: 10px; box-shadow: none;">Save</button>
                                 {% if form.instance.pk %}
-                                    <a href="{% url 'post_detail' pk=form.instance.pk %}" class="btn btn-secondary" style="width: 100%; border: 2px solid #a55c8f; color: #a55c8f; background: #fff; border-radius: 10px; font-size: 1.15rem; margin-bottom: 0;">Cancel</a>
+                                    <a href="{% url 'post_detail' pk=form.instance.pk %}" class="btn btn-secondary" style="width: 100%; border: 2px solid #a55c8f; color: #a55c8f; background: #fff; border-radius: 10px; font-size: 1.15rem; margin-bottom: 0; box-shadow: none;">Cancel</a>
                                 {% else %}
-                                    <a href="{% url 'post_list' %}" class="btn btn-secondary" style="width: 100%; border: 2px solid #a55c8f; color: #a55c8f; background: #fff; border-radius: 10px; font-size: 1.15rem; margin-bottom: 0;">Cancel</a>
+                                    <a href="{% url 'post_list' %}" class="btn btn-secondary" style="width: 100%; border: 2px solid #a55c8f; color: #a55c8f; background: #fff; border-radius: 10px; font-size: 1.15rem; margin-bottom: 0; box-shadow: none;">Cancel</a>
                                 {% endif %}
                 <style>
                     .login-card input,
@@ -60,6 +60,24 @@ The same template is shared by both "new post" and "edit post" views. -->
                         min-height: 120px !important;
                         max-height: 180px !important;
                         height: 140px !important;
+                    }
+                    label[for="id_image"],
+                    .save.btn.btn-secondary,
+                    a.btn.btn-secondary {
+                        transition: background 0.2s, color 0.2s, border 0.2s;
+                    }
+                    label[for="id_image"]:hover,
+                    .save.btn.btn-secondary:hover,
+                    a.btn.btn-secondary:hover {
+                        background: #a55c8f !important;
+                        color: #fff !important;
+                        border: 2px solid #a55c8f !important;
+                    }
+                    label[for="id_image"]:hover span {
+                        color: #fff !important;
+                    }
+                    label[for="id_image"]:hover svg {
+                        fill: #fff !important;
                     }
                 </style>
                 <script>
@@ -92,9 +110,9 @@ The same template is shared by both "new post" and "edit post" views. -->
                 </script>
             </form>
         </div>
-        <div class="post-illustration" style="display: flex; align-items: center; justify-content: center;">
-            <img src="/static/blog/img/illustrationedit.png" alt="Post illustration" style="max-width: 340px; width: 100%; height: auto;">
-        </div>
+    </div>
+    <div class="illustration-container">
+        <img src="/static/blog/img/illustrationedit.png" alt="Post illustration" style="max-width: 440px; width: 100%; height: auto; margin-top: 70px;">
     </div>
 </div>
 {% endblock %}
