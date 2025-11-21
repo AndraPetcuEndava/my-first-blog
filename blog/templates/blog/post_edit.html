@@ -44,6 +44,9 @@ The same template is shared by both "new post" and "edit post" views. -->
                     </div>
                 </div>
                 <button type="submit" class="save btn btn-secondary" style="width: 100%; border: 2px solid #a55c8f; color: #a55c8f; background: #fff; border-radius: 10px; font-size: 1.15rem; margin-bottom: 10px; box-shadow: none;">Save</button>
+                                                {% if not form.instance.pk %}
+                                                <button type="submit" name="publish_immediately" value="1" class="save btn btn-secondary" style="width: 100%; border: 2px solid #a55c8f; color: #a55c8f; background: #fff; border-radius: 10px; font-size: 1.15rem; margin-bottom: 10px; box-shadow: none;">Publish Immediately</button>
+                                                {% endif %}
                                 {% if form.instance.pk %}
                                     <a href="{% url 'post_detail' pk=form.instance.pk %}" class="btn btn-secondary" style="width: 100%; border: 2px solid #a55c8f; color: #a55c8f; background: #fff; border-radius: 10px; font-size: 1.15rem; margin-bottom: 0; box-shadow: none;">Cancel</a>
                                 {% else %}

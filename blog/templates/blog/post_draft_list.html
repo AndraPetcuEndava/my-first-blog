@@ -4,36 +4,58 @@ Allows the author to publish, edit, or delete each draft. -->
 {% extends 'blog/base.html' %}
 
 {% block content %}
+<div style="display: flex; flex-wrap: wrap; gap: 32px; justify-content: center; align-items: flex-start; margin-top: 32px;">
+<style>
+        .draft-card .btn.btn-secondary {
+            transition: background 0.2s, color 0.2s, border 0.2s;
+        }
+        .draft-card .btn.btn-secondary:hover {
+            background: #a55c8f !important;
+            color: #fff !important;
+            border: 2px solid #a55c8f !important;
+        }
+        .draft-card .btn.btn-secondary:hover svg {
+            fill: #fff !important;
+        }
+    .draft-card {
+        transition: border 0.1s;
+        border: 0px solid transparent;
+    }
+    .draft-card:hover {
+        border: 3px solid #a55c8f;
+        box-shadow: none;
+        transform: none;
+    }
+</style>
 {% for post in posts %}
-<a href="{% url 'post_detail' pk=post.pk %}" style="text-decoration:none;color:inherit;">
-    <div class="post post-detail-flex">
-        <!-- POST CONTENT: title and text preview -->
-        <div class="post-content">
-            <h2>{{ post.title }}</h2>
-            <div>{{ post.text|striptags|truncatechars:500|safe }}</div>
-        </div>
-        <!-- ACTION BUTTONS: publish, edit, delete -->
-        <div class="actions-row" style="margin-top: 50px;">
+        <a href="{% url 'post_edit' pk=post.pk %}" style="text-decoration: none; color: inherit; display: block;">
+        <div class="draft-card" style="background: #fff; border-radius: 24px; box-shadow: 0 2px 16px rgba(207,109,150,0.10); padding: 32px 32px 24px 32px; max-width: 370px; min-width: 320px; width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center; cursor: pointer;">
+            {% if post.image %}
+                <img src="{{ post.image.url }}" alt="Post image" style="width: 100%; height: 180px; border-top-left-radius: 10px; border-top-right-radius: 10px; border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: 0; object-fit: cover; display: block;">
+            {% endif %}
+        <div style="font-family: 'Lobster', cursive; color: #a55c8f; font-size: 2rem; margin-bottom: 0;">{{ post.title }}</div>
+        <div style="color: #6c757d; font-size: 1.08rem; margin-bottom: 18px; margin-top: 8px; font-weight: 500;">{{ post.created_date|date:'M d, Y, g:i a' }}</div>
+        <div style="color: #444; font-size: 1.04rem; margin-bottom: 24px; line-height: 1.5;">{{ post.text|striptags|truncatechars:140|safe }}</div>
+        <div style="display: flex; gap: 12px; justify-content: center; align-items: center; margin-top: auto;">
             <form method="post" action="{% url 'post_publish' pk=post.pk %}" style="display:inline;">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-secondary" title="Publish">
+                <button type="submit" class="btn btn-secondary" title="Publish" style="border: 2px solid #a55c8f; color: #a55c8f; background: #fff; border-radius: 10px; font-size: 1.08rem; padding: 6px 18px; display: flex; align-items: center; gap: 6px;">
                     {% include './icons/file-earmark-plus.svg' %}
                     Publish
                 </button>
             </form>
-            <!-- EDIT DRAFT -->
-            <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}" title="Edit">
+            <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}" title="Edit" style="border: 2px solid #a55c8f; color: #a55c8f; background: #fff; border-radius: 10px; padding: 6px 12px; display: flex; align-items: center;">
                 {% include './icons/pencil-fill.svg' %}
             </a>
-            <!-- DELETE DRAFT -->
             <form method="post" action="{% url 'post_remove' pk=post.pk %}" style="display:inline;">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-secondary" title="Delete">
+                <button type="submit" class="btn btn-secondary" title="Delete" style="border: 2px solid #a55c8f; color: #a55c8f; background: #fff; border-radius: 10px; padding: 6px 12px; display: flex; align-items: center;">
                     {% include './icons/trash-fill.svg' %}
                 </button>
             </form>
         </div>
     </div>
-</a>
+    </a>
 {% endfor %}
+</div>
 {% endblock %}

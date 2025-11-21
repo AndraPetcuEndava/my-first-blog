@@ -37,8 +37,13 @@ def post_new(request):
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
-            post.save()
-            return redirect("post_draft_list")
+            if "publish_immediately" in request.POST:
+                post.published_date = timezone.now()
+                post.save()
+                return redirect("post_list")
+            else:
+                post.save()
+                return redirect("post_draft_list")
     else:
         form = PostForm()
     return render(request, "blog/post_edit.html", {"form": form})
