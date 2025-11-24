@@ -137,7 +137,7 @@
             });
         });
 
-        // REPLY TO COMMENT (AJAX, stays in place, works for all forms)
+        // REPLY TO COMMENT (AJAX, stays in place, works for all reply forms)
         document.addEventListener('submit', async (e) => {
             const form = e.target.closest('.reply-form');
             if (!form) return;
@@ -149,6 +149,8 @@
             });
             if (res.ok) {
                 listEl.innerHTML = await res.text();
+                // Reset all reply forms after update
+                document.querySelectorAll('.reply-form').forEach(f => f.reset && f.reset());
                 if (isAuthenticated) stayInComments();
             }
         });

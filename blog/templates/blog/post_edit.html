@@ -17,7 +17,11 @@ The same template is shared by both "new post" and "edit post" views. -->
                 </div>
                 <div style="margin-bottom: 16px; display: flex; align-items: flex-start; gap: 0px; justify-content: flex-start;">
                     <label for="id_text" style="font-weight: 500; color: #6c757d; min-width: 80px; text-align: left;">Text:</label>
-                    <div style="flex: 1;">{{ form.text }}</div>
+                    <div style="flex: 1;">
+                        <div class="ckeditor-wrapper" style="background: #f8f3fa; border-radius: 14px; border: 1.5px solid #a55c8f; box-shadow: 0 2px 8px rgba(207,109,150,0.07); padding: 10px 12px 0 12px; min-height: 180px;">
+                            {{ form.text }}
+                        </div>
+                    </div>
                 </div>
                 <div style="margin-bottom: 16px;">
                     <label for="id_image" style="cursor:pointer; display:inline-block; width: 160px; border: 2px solid #a55c8f; border-radius: 10px; background: #fff; display: flex; align-items: center; justify-content: center; flex-direction: row; padding: 6px 0; font-size: 1rem; color: #a55c8f; margin-bottom: 0; box-shadow: none;">
@@ -53,6 +57,32 @@ The same template is shared by both "new post" and "edit post" views. -->
                                     <a href="{% url 'post_list' %}" class="btn btn-secondary" style="width: 100%; border: 2px solid #a55c8f; color: #a55c8f; background: #fff; border-radius: 10px; font-size: 1.15rem; margin-bottom: 0; box-shadow: none;">Cancel</a>
                                 {% endif %}
                 <style>
+                    /* CKEditor wrapper for modern look */
+                    .ckeditor-wrapper .cke{
+                        background: transparent !important;
+                        border: none !important;
+                        box-shadow: none !important;
+                        border-radius: 10px !important;
+                    }
+                    .ckeditor-wrapper .cke_top{
+                        background: #f8f3fa !important;
+                        border: none !important;
+                        border-radius: 10px 10px 0 0 !important;
+                    }
+                    .ckeditor-wrapper .cke_contents{
+                        background: #fff !important;
+                        border-radius: 0 0 10px 10px !important;
+                        border: none !important;
+                        min-height: 120px !important;
+                    }
+                    .ckeditor-wrapper .cke_bottom{
+                        background: #f8f3fa !important;
+                        border: none !important;
+                        border-radius: 0 0 10px 10px !important;
+                    }
+                    .ckeditor-wrapper .cke_inner{
+                        border-radius: 10px !important;
+                    }
                     .login-card input,
                     .login-card textarea {
                         border-radius: 7px !important;

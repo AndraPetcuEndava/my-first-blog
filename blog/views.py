@@ -175,17 +175,19 @@ def add_reply_to_comment(request, pk):
 
     parent_comment = get_object_or_404(Comment, pk=pk)
     if request.method == "POST":
-        author = request.POST.get("author")
         text = request.POST.get("text")
+        if request.user.is_authenticated:
+            author = "admin"
+        else:
+            author = request.POST.get("author")
         if author and text:
-            # Create reply comment
+            is_approved = request.user.is_authenticated if hasattr(request, 'user') else False
             reply = Comment.objects.create(
                 post=parent_comment.post,
                 author=author,
                 text=text,
-                approved_comment=True,
+                approved_comment=is_approved,
             )
-            # Link reply to parent
             reply.parent = parent_comment
             reply.save()
         # AJAX: return updated comments list
