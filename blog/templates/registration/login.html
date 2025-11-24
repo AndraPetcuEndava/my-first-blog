@@ -1,52 +1,71 @@
-<!-- ---------------------------------------
+<!-----------------------------------------
    LOGIN TEMPLATE
----------------------------------------
+-------------------------------------------
      Purpose:
        Displays the login form used by Django’s built-in
        authentication system.
-     ---------------------------------------------------------
+-------------------------------------------
      Used when:
        - The user is redirected here to log in before
-         accessing restricted pages (e.g. drafts, edit, new post). -->
-       
+         accessing restricted pages (e.g. drafts, edit, new post).
+-------------------------------------------
+-->
+
 
 {% extends "blog/base.html" %}
 
 {% block content %}
-    <div class="login-bg" style="min-height: 80vh; background: #fff; display: flex; align-items: flex-start; justify-content: center; padding-top: 40px;">
-        <div class="login-card" style="background: #fff; border-radius: 18px; box-shadow: 0 2px 16px rgba(207,109,150,0.08); padding: 32px 32px 24px 32px; max-width: 400px; width: 100%; text-align: center;">
-            <img src="/static/blog/img/login-illustration.png" alt="Login illustration" style="width: 100%; max-width: 340px; margin-bottom: 18px;">
-            <h1 style="font-family: 'Lobster', cursive; color: #a55c8f; font-size: 2.5rem; margin-bottom: 8px;">Login</h1>
-            <div style="color: #6c757d; font-size: 1.15rem; margin-bottom: 18px;">Welcome back! Please sign in to continue.</div>
-            {% if form.errors %}
-                <div style="color: #d9534f; margin-bottom: 12px;">Your username and password didn't match. Please try again.</div>
-            {% endif %}
-            <form method="post" action="{% url 'login' %}" style="text-align:left;">
-                {% csrf_token %}
-                <div style="margin-bottom: 16px; display: flex; align-items: center; gap: 0px; justify-content: flex-start;">
-                    <label for="id_username" style="font-weight: 500; color: #6c757d; min-width: 80px; text-align: left;">Username</label>
-                    <div style="flex: 1;">
-                        {{ form.username }}
-                    </div>
-                </div>
-                <div style="margin-bottom: 16px; display: flex; align-items: center; gap: 0px; justify-content: flex-start;">
-                    <label for="id_password" style="font-weight: 500; color: #6c757d; min-width: 80px; text-align: left;">Password</label>
-                    <div style="flex: 1;">
-                        {{ form.password }}
-                    </div>
-                </div>
-                <button type="submit" class="save btn btn-secondary" style="width: 100%; margin-bottom: 10px;">Log in</button>
-                <input type="hidden" name="next" value="{{ next }}" />
-            </form>
-            <style>
-                .login-card input {
-                    border-radius: 7px !important;
-                    border: 1px solid #a55c8f;
-                    padding: 6px 12px;
-                    font-size: 1rem;
-                }
-            </style>
-                <a href="/" class="btn btn-secondary" style="width: 100%; margin-top: 18px;">Return to Blog</a>
+<!-- ===== Login page main container ===== -->
+<div class="login-bg" style="min-height: 80vh; display: flex; align-items: flex-start; justify-content: center; padding-top: 40px;">
+
+    <div class="login-card login-bg" style="border-radius: 18px; box-shadow: 0 2px 16px rgba(207,109,150,0.08); padding: 32px 32px 24px 32px; max-width: 400px; width: 100%; text-align: center;">
+
+        <img src="/static/blog/img/login-illustration.png" alt="Login illustration"
+            style="width: 100%; max-width: 340px; margin-bottom: 18px;">
+
+        <h1 style="font-family: 'Lobster', cursive; color: #a55c8f; font-size: 2.5rem; margin-bottom: 8px;">Login</h1>
+
+        <div style="color: #6c757d; font-size: 1.15rem; margin-bottom: 18px;">Welcome back! Please sign in to continue.
         </div>
+
+        <!-- Error message if login fails -->
+        {% if form.errors %}
+        <div style="color: #d9534f; margin-bottom: 12px;">Your username and password didn't match. Please try again.
+        </div>
+        {% endif %}
+
+        <!-- Login form -->
+        <form method="post" action="{% url 'login' %}" style="text-align:left;">
+            {% csrf_token %}
+
+            <!-- Username field -->
+            <div
+                style="margin-bottom: 16px; display: flex; align-items: center; gap: 0px; justify-content: flex-start;">
+                <label for="id_username"
+                    style="font-weight: 500; color: #6c757d; min-width: 80px; text-align: left;">Username</label>
+                <div style="flex: 1;">
+                    {{ form.username }}
+                </div>
+            </div>
+
+            <!-- Password field -->
+            <div
+                style="margin-bottom: 16px; display: flex; align-items: center; gap: 0px; justify-content: flex-start;">
+                <label for="id_password"
+                    style="font-weight: 500; color: #6c757d; min-width: 80px; text-align: left;">Password</label>
+                <div style="flex: 1;">
+                    {{ form.password }}
+                </div>
+            </div>
+
+            <!-- Submit button -->
+            <button type="submit" class="save btn btn-secondary" style="width: 100%; margin-bottom: 10px;">Log
+                in</button>
+            <input type="hidden" name="next" value="{{ next }}" />
+        </form>
+        
+        <!-- Return to blog button -->
+        <a href="/" class="btn btn-secondary" style="width: 100%; margin-top: 18px;">Return to Blog</a>
     </div>
+</div>
 {% endblock %}

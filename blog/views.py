@@ -22,7 +22,7 @@ def post_detail(request, pk):
     return render(request, "blog/post_detail.html", {"post": post})
 
 
-# Get posts that do NOT have a published_date (drafts only)
+# DRAFT LIST VIEW – show all posts that are drafts (not published)
 @login_required
 def post_draft_list(request):
     posts = Post.objects.filter(published_date__isnull=True).order_by("-created_date")
@@ -58,13 +58,17 @@ def post_edit(request, pk):
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
-            # Handle image removal
+            # Handle image removal if requested
             if request.POST.get("remove_image") == "1":
                 if post.image:
                     post.image.delete(save=False)
                     post.image = None
             post.save()
-            return redirect("post_detail", pk=post.pk)
+            # Redirect based on whether post is published or still a draft
+            if post.published_date:
+                return redirect("post_detail", pk=post.pk)
+            else:
+                return redirect("post_draft_list")
     else:
         form = PostForm(instance=post)
     return render(request, "blog/post_edit.html", {"form": form})
@@ -84,13 +88,12 @@ def post_publish(request, pk):
 @require_POST
 def post_remove(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    # keep published flag before delete for redirect
     was_published = bool(post.published_date)
     post.delete()
     return redirect("post_list" if was_published else "post_draft_list")
 
 
-# Add a comment to a post
+# ADD COMMENT VIEW – add a comment to a post
 def add_comment_to_post(request, pk):
     post = get_object_or_404(Post, pk=pk)
     if request.method == "POST":
@@ -98,10 +101,10 @@ def add_comment_to_post(request, pk):
         if form.is_valid():
             comment = form.save(commit=False)
             comment.post = post
-            comment.approved_comment = False  # New comment requires approval
+            comment.approved_comment = False  # New comment requires admin approval
             comment.save()
 
-            # AJAX: return only the list fragment
+            # AJAX: If AJAX request, return only the comments list fragment
             if request.headers.get("x-requested-with") == "XMLHttpRequest":
                 return render(
                     request,
@@ -116,22 +119,28 @@ def add_comment_to_post(request, pk):
                 request, "Your comment was submitted and is awaiting admin approval."
             )
 
-            # Redirect to post detail (no anchor for unauthenticated users)
+            # Redirect to post detail
             url = reverse("post_detail", kwargs={"pk": post.pk})
             if request.user.is_authenticated:
-                # Only add anchor if the request is AJAX (moderation convenience)
+                # If the user is authenticated and it was an AJAX request,
+                # add an anchor so it scrolls to the comments section on reload
                 if request.headers.get("x-requested-with") == "XMLHttpRequest":
                     url += "#comments-part"
+            # Redirect back to the post detail page (with or without anchor)
             return HttpResponseRedirect(url)
 
-        # validation failed – fallback full page (non-AJAX)
-        return render(request, "blog/add_comment_to_post.html", {"form": form, "post": post})
+        return render(
+            request, "blog/add_comment_to_post.html", {"form": form, "post": post}
+        )
+    # If the request is not POST (GET), render an empty form for the user to fill
     else:
         form = CommentForm()
-        return render(request, "blog/add_comment_to_post.html", {"form": form, "post": post})
+        return render(
+            request, "blog/add_comment_to_post.html", {"form": form, "post": post}
+        )
 
 
-# Approve a comment (make it visible)
+# APPROVE COMMENT VIEW – admin approves a comment
 @login_required
 @require_POST
 def comment_approve(request, pk):
@@ -140,6 +149,7 @@ def comment_approve(request, pk):
     comment.save()
     post = comment.post
 
+    # AJAX: allows the website to update the comments section without refreshing the entire page
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
         return render(
             request, "blog/comments_list.html", {"post": post, "user": request.user}
@@ -148,7 +158,7 @@ def comment_approve(request, pk):
     return redirect("post_detail", pk=post.pk)
 
 
-# Remove a comment (delete from DB)
+# REMOVE COMMENT VIEW – delete a comment from a post
 @login_required
 @require_POST
 def comment_remove(request, pk):
@@ -156,6 +166,7 @@ def comment_remove(request, pk):
     post = comment.post
     comment.delete()
 
+    # AJAX: allows the website to update the comments section without refreshing the entire page
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
         return render(
             request, "blog/comments_list.html", {"post": post, "user": request.user}
@@ -164,24 +175,28 @@ def comment_remove(request, pk):
     return HttpResponseRedirect(reverse("post_detail", args=[post.pk]))
 
 
-# Add a reply to a comment
-from django.views.decorators.csrf import csrf_exempt
+# ADD REPLY TO COMMENT VIEW – add a reply to a comment (AJAX or POST)
+from django.views.decorators.csrf import csrf_protect
 from django.http import JsonResponse
 
 
-@csrf_exempt
+@csrf_protect
 def add_reply_to_comment(request, pk):
     from .models import Comment
 
     parent_comment = get_object_or_404(Comment, pk=pk)
     if request.method == "POST":
         text = request.POST.get("text")
+        # If admin is replying, set author to 'admin'
         if request.user.is_authenticated:
             author = "admin"
         else:
             author = request.POST.get("author")
         if author and text:
-            is_approved = request.user.is_authenticated if hasattr(request, 'user') else False
+            # Approve reply automatically if admin, else require approval
+            is_approved = (
+                request.user.is_authenticated if hasattr(request, "user") else False
+            )
             reply = Comment.objects.create(
                 post=parent_comment.post,
                 author=author,
@@ -190,12 +205,14 @@ def add_reply_to_comment(request, pk):
             )
             reply.parent = parent_comment
             reply.save()
-        # AJAX: return updated comments list
+        # AJAX: If AJAX request, return updated comments list
         if request.headers.get("x-requested-with") == "XMLHttpRequest":
             return render(
                 request,
                 "blog/comments_list.html",
                 {"post": parent_comment.post, "user": request.user},
             )
+        # Fallback: redirect to post detail
         return redirect("post_detail", pk=parent_comment.post.pk)
+    # Fallback: redirect to post detail if not POST
     return redirect("post_detail", pk=parent_comment.post.pk)

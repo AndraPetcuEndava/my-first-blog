@@ -1,13 +1,20 @@
+/* -------------------------------------------
+    COMMENTS SECTION STYLESHEET
+------------------------------------------- */
+
+/* Adjust the date font size below each comment */
 .comment-date {
     font-size: 15px;
 }
+
 
 /* Gray color for comment author and text */
 .text-gray {
     color: #6c757d;
 }
 
-/* Comments section styles moved from comments_list.html */
+
+/* Add comment button styles */
 .add-comment-btn {
     margin-bottom: 12px;
     color: #a55c8f;
@@ -24,13 +31,14 @@
     text-decoration: none;
 }
 
+/* Hover/focus effect for the "Add comment" button */
 .add-comment-btn:hover,
 .add-comment-btn:focus {
     background: #a55c8f;
     color: #fff;
 }
 
-/* Prevent comments section from expanding vertically */
+/* Comments list container */
 #comments-list {
     min-height: 80px;
     padding-top: 0;
@@ -39,16 +47,20 @@
     margin-bottom: 0;
 }
 
+/* Individual comment wrapper */
 .comment {
     margin-bottom: 0;
     padding-bottom: 0;
 }
 
+/* Separator Between Comments */
 .comment-separator {
     margin-top: 8px;
     margin-bottom: 8px;
 }
 
+
+/* Comments Section Header */
 .comments-header {
     color: #6c757d !important;
 }

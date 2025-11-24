@@ -1,102 +1,173 @@
+<!-------------------------------------------
+    POST EDIT PAGE
+-------------------------------------------
+    Renders all comments for a post
+    Shows moderation buttons (approve/delete) only to authenticated users
+    Reply form is shown for authenticated users on approved comments
+-------------------------------------------
+-->
+
 <div class="comments-section-custom" style="background: #f8f3fa !important; border-radius: 18px; padding: 24px;">
+    
+    <!-- Comments header -->
     <h2 class="comments-header"
         style="color: #a55c8f; font-family: 'Lobster', cursive; font-weight: bold; margin-bottom: 24px;">Comments:</h2>
     {% if not user.is_authenticated %}
+
+    <!-- Add comment button for guests -->
     <a href="{% url 'add_comment_to_post' pk=post.pk %}" class="add-comment-btn">Add comment</a>
     {% endif %}
     {% for comment in post.comments.all %}
-        {% if not comment.parent %}
-            {% if user.is_authenticated or comment.approved_comment %}
-            <div class="comment-card" style="display: flex; align-items: flex-start; background: #fff; border-radius: 16px; margin-bottom: 18px; box-shadow: 0 2px 8px rgba(207,109,150,0.07); padding: 18px 20px;">
-                <!-- Author Initial Circle -->
-                <div style="width: 48px; height: 48px; border-radius: 50%; background: #f8c3da; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; color: #000000; margin-right: 18px;">
-                    {{ comment.author|slice:':1'|upper }}
+    {% if not comment.parent %}
+    {% if user.is_authenticated or comment.approved_comment %}
+
+    <!-- ===== Main comment card (top-level comment) ===== -->
+    <div class="comment-card"
+        style="display: flex; align-items: flex-start; background: #fff; border-radius: 16px; margin-bottom: 18px; box-shadow: 0 2px 8px rgba(207,109,150,0.07); padding: 18px 20px;">
+        
+        <!-- Author avatar -->
+        <div
+            style="width: 48px; height: 48px; border-radius: 50%; background: #f8c3da; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; color: #000000; margin-right: 18px;">
+            {{ comment.author|slice:':1'|upper }}
+        </div>
+
+        <!-- Right column: meta (author/date/actions) + text + replies -->
+        <div style="flex: 1;">
+
+            <!-- Row: author/date + moderation buttons on the right -->
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+
+                <!-- Author and timestamp -->
+                <div>
+                      <span style="font-weight: 500; color: #a55c8f;">From: <span
+                            style="font-weight: bold; color: #222;">{{ comment.author }}</span></span><br>
+                      <span class="comment-date" style="font-size: 15px; color: #888;">{{ comment.created_date }}</span>
                 </div>
-                <!-- Comment Meta and Text -->
-                <div style="flex: 1;">
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <div>
-                            <span style="font-weight: 500; color: #a55c8f;">From: <span style="font-weight: bold; color: #222;">{{ comment.author }}</span></span><br>
-                            <span class="comment-date" style="font-size: 15px; color: #888;">{{ comment.created_date|date:"M d, Y, g:i a" }}</span>
-                        </div>
-                        <div>
-                            {% if user.is_authenticated %}
-                                {% if comment.approved_comment %}
-                                <!-- Approved: show only delete button -->
-                                <button type="button" class="btn btn-sm btn-outline-danger js-comment-action" data-method="POST" data-url="{% url 'comment_remove' pk=comment.pk %}" title="Delete" style="border:none;background:none;padding:0;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#a55c8f" viewBox="0 0 16 16">
-                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5.5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6zm3 .5a.5.5 0 0 1 .5-.5.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6z" />
-                                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1-1V1a1 1 0 0 0-1-1h-7a1 1 0 0 0-1-1v1a1 1 0 0 1-1 1H1v1h14V3h-1.5zm-1-1V1h-7v1h7zM2.5 4v9a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2V4h-11zm11 9a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1V4h9v9z" />
-                                    </svg>
-                                </button>
-                                {% else %}
-                                <!-- Approve button -->
-                                <button type="button" class="btn btn-sm btn-outline-success js-comment-action" data-method="POST" data-url="{% url 'comment_approve' pk=comment.pk %}" title="Approve" style="border:none;background:none;padding:0;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#38c172" viewBox="0 0 16 16">
-                                        <path d="M13.485 1.929a.75.75 0 0 1 0 1.06l-7.07 7.07a.75.75 0 0 1-1.06 0l-3.182-3.182a.75.75 0 1 1 1.06-1.06l2.652 2.652 6.54-6.54a.75.75 0 0 1 1.06 0z" />
-                                    </svg>
-                                </button>
-                                <!-- Disapprove button -->
-                                <button type="button" class="btn btn-sm btn-outline-danger js-comment-action" data-method="POST" data-url="{% url 'comment_remove' pk=comment.pk %}" title="Disapprove" style="border:none;background:none;padding:0;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#a55c8f" viewBox="0 0 16 16">
-                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5.5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6zm3 .5a.5.5 0 0 1 .5-.5.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6z" />
-                                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1-1V1a1 1 0 0 0-1-1h-7a1 1 0 0 0-1-1v1a1 1 0 0 1-1 1H1v1h14V3h-1.5zm-1-1V1h-7v1h7zM2.5 4v9a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2V4h-11zm11 9a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1V4h9v9z" />
-                                    </svg>
-                                </button>
-                                {% endif %}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="comment-text" style="margin-top: 10px; font-size: 17px; color: #222;">{{ comment.text }}</div>
-                    {% if user.is_authenticated and comment.approved_comment %}
-                    <!-- Reply button and form (only for authenticated users and approved comments) -->
-                    <div style="margin-top: 8px;">
-                        <button class="btn btn-link btn-sm text-primary" type="button" onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display === 'block' ? 'none' : 'block')" style="padding:0; color:#a55c8f; font-weight:500;">Reply</button>
-                        <form method="POST" action="{% url 'add_reply_to_comment' pk=comment.pk %}" class="reply-form" style="display:none; margin-top:8px;">
-                            {% csrf_token %}
-                            <textarea name="text" placeholder="Your reply" class="form-control form-control-sm" style="margin-bottom:6px; min-height:40px; max-width:350px; display:inline-block;" required></textarea>
-                            <button type="submit" class="btn btn-secondary btn-sm" style="border-radius:7px; padding:2px 12px; font-size:0.98rem;">Send</button>
-                        </form>
-                    </div>
+                <div>
+
+                    <!-- Moderation controls: visible only to authenticated users -->
+                    {% if user.is_authenticated %}
+                    {% if comment.approved_comment %}
+
+                    <!-- Approved comments: only allow delete -->
+                    <button type="button" class="btn btn-sm btn-outline-danger js-comment-action" data-method="POST"
+                        data-url="{% url 'comment_remove' pk=comment.pk %}" title="Delete"
+                        style="border:none;background:none;padding:0;">
+
+                        <!-- delete icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#a55c8f"
+                            viewBox="0 0 16 16">
+                            <path
+                                d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5.5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6zm3 .5a.5.5 0 0 1 .5-.5.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6z" />
+                            <path fill-rule="evenodd"
+                                d="M14.5 3a1 1 0 0 1-1-1V1a1 1 0 0 0-1-1h-7a1 1 0 0 0-1-1v1a1 1 0 0 1-1 1H1v1h14V3h-1.5zm-1-1V1h-7v1h7zM2.5 4v9a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2V4h-11zm11 9a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1V4h9v9z" />
+                        </svg>
+                    </button>
+                    {% else %}
+
+                    <!-- Pending comments: approve or remove -->
+                    <button type="button" class="btn btn-sm btn-outline-success js-comment-action" data-method="POST"
+                        data-url="{% url 'comment_approve' pk=comment.pk %}" title="Approve"
+                        style="border:none;background:none;padding:0;">
+
+                        <!-- approve icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#38c172"
+                            viewBox="0 0 16 16">
+                            <path
+                                d="M13.485 1.929a.75.75 0 0 1 0 1.06l-7.07 7.07a.75.75 0 0 1-1.06 0l-3.182-3.182a.75.75 0 1 1 1.06-1.06l2.652 2.652 6.54-6.54a.75.75 0 0 1 1.06 0z" />
+                        </svg>
+                    </button>
+
+                    <!-- Disapprove button -->
+                    <button type="button" class="btn btn-sm btn-outline-danger js-comment-action" data-method="POST"
+                        data-url="{% url 'comment_remove' pk=comment.pk %}" title="Disapprove"
+                        style="border:none;background:none;padding:0;">
+
+                        <!-- delete icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#a55c8f"
+                            viewBox="0 0 16 16">
+                            <path
+                                d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5.5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6zm3 .5a.5.5 0 0 1 .5-.5.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6z" />
+                            <path fill-rule="evenodd"
+                                d="M14.5 3a1 1 0 0 1-1-1V1a1 1 0 0 0-1-1h-7a1 1 0 0 0-1-1v1a1 1 0 0 1-1 1H1v1h14V3h-1.5zm-1-1V1h-7v1h7zM2.5 4v9a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2V4h-11zm11 9a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1V4h9v9z" />
+                        </svg>
+                    </button>
                     {% endif %}
-                    <!-- Nested replies -->
-                    {% for reply in comment.replies.all|dictsort:"created_date" %}
-                        {% if user.is_authenticated or reply.approved_comment %}
-                        <div class="reply-card" style="margin-left: 48px; margin-top: 12px; background: #f8f3fa !important; border-radius: 12px; padding: 12px 16px; display: flex; align-items: flex-start; justify-content: space-between;">
-                            <!-- Initial Circle for reply author -->
-                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #f8c3da; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; color: #000000; margin-right: 16px; flex-shrink: 0;">
-                                {% if reply.author == 'admin' %}A{% else %}{{ reply.author|slice:':1'|upper }}{% endif %}
-                            </div>
-                            <div style="flex:1;">
-                                {% if reply.author == 'admin' %}
-                                    <div style="font-size: 15px;">
-                                        <span style="color: #a55c8f; font-weight: 500;">From:</span>
-                                        <span style="color: #000; font-weight: bold;"> Admin</span>
-                                    </div>
-                                {% else %}
-                                    <div style="font-size: 15px; color: #a55c8f; font-weight: 500;">{{ reply.author }}</div>
-                                {% endif %}
-                                <div style="font-size: 15px; color: #888;">{{ reply.created_date|date:"M d, Y, g:i a" }}</div>
-                                <div style="margin-top: 4px; color: #030303; font-size: 16px;">{{ reply.text }}</div>
-                            </div>
-                            {% if user.is_authenticated %}
-                            <div style="margin-left: 12px; display: flex; align-items: flex-start;">
-                                <button type="button" class="btn btn-sm btn-outline-danger js-comment-action" data-method="POST" data-url="{% url 'comment_remove' pk=reply.pk %}" title="Delete" style="border:none;background:none;padding:0;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#a55c8f" viewBox="0 0 16 16">
-                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5.5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6zm3 .5a.5.5 0 0 1 .5-.5.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6z" />
-                                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1-1V1a1 1 0 0 0-1-1h-7a1 1 0 0 0-1-1v1a1 1 0 0 1-1 1H1v1h14V3h-1.5zm-1-1V1h-7v1h7zM2.5 4v9a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2V4h-11zm11 9a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1V4h9v9z" />
-                                    </svg>
-                                </button>
-                            </div>
-                            {% endif %}
-                        </div>
-                        {% endif %}
-                    {% endfor %}
+                    {% endif %}
                 </div>
             </div>
+
+            <!-- Comment text -->
+            <div class="comment-text" style="margin-top: 10px; font-size: 17px; color: #222;">{{ comment.text }}</div>
+            {% if user.is_authenticated and comment.approved_comment %}
+
+            <!-- Reply button and form (only for authenticated users and approved comments) -->
+            <div style="margin-top: 8px;">
+                <button class="btn btn-link btn-sm text-primary" type="button"
+                    onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display === 'block' ? 'none' : 'block')"
+                    style="padding:0; color:#a55c8f; font-weight:500;">Reply</button>
+                <form method="POST" action="{% url 'add_reply_to_comment' pk=comment.pk %}" class="reply-form"
+                    style="display:none; margin-top:8px;">
+                    {% csrf_token %}
+                    <textarea name="text" placeholder="Your reply" class="form-control form-control-sm"
+                        style="margin-bottom:6px; min-height:40px; max-width:350px; display:inline-block;"
+                        required></textarea>
+                    <button type="submit" class="btn btn-secondary btn-sm"
+                        style="border-radius:7px; padding:2px 12px; font-size:0.98rem;">Send</button>
+                </form>
+            </div>
             {% endif %}
-        {% endif %}
+
+            <!-- ===== Nested replies ===== -->
+            {% for reply in comment.replies.all|dictsort:"created_date" %}
+            {% if user.is_authenticated or reply.approved_comment %}
+            <div class="reply-card"
+                style="margin-left: 48px; margin-top: 12px; background: #f8f3fa !important; border-radius: 12px; padding: 12px 16px; display: flex; align-items: flex-start; justify-content: space-between;">
+                
+                <!-- Initial Circle for Admin -->
+                <div
+                    style="width: 40px; height: 40px; border-radius: 50%; background: #f8c3da; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; color: #000000; margin-right: 16px; flex-shrink: 0;">
+                    {% if reply.author == 'admin' %}A{% else %}{{ reply.author|slice:':1'|upper }}{% endif %}
+                </div>
+
+                <!-- Reply content -->
+                <div style="flex:1;">
+                    {% if reply.author == 'admin' %}
+                    <div style="font-size: 15px;">
+                        <span style="color: #a55c8f; font-weight: 500;">From:</span>
+                        <span style="color: #000; font-weight: bold;"> Admin</span>
+                    </div>
+                    {% else %}
+                    <div style="font-size: 15px; color: #a55c8f; font-weight: 500;">{{ reply.author }}</div>
+                    {% endif %}
+                    <div style="font-size: 15px; color: #888;">{{ reply.created_date|date:"M d, Y, g:i a" }}</div>
+                    <div style="margin-top: 4px; color: #030303; font-size: 16px;">{{ reply.text }}</div>
+                </div>
+
+                <!-- Delete reply (admins only) -->
+                {% if user.is_authenticated %}
+                <div style="margin-left: 12px; display: flex; align-items: flex-start;">
+                    <button type="button" class="btn btn-sm btn-outline-danger js-comment-action" data-method="POST"
+                        data-url="{% url 'comment_remove' pk=reply.pk %}" title="Delete"
+                        style="border:none;background:none;padding:0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#a55c8f"
+                            viewBox="0 0 16 16">
+                            <path
+                                d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5.5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6zm3 .5a.5.5 0 0 1 .5-.5.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6z" />
+                            <path fill-rule="evenodd"
+                                d="M14.5 3a1 1 0 0 1-1-1V1a1 1 0 0 0-1-1h-7a1 1 0 0 0-1-1v1a1 1 0 0 1-1 1H1v1h14V3h-1.5zm-1-1V1h-7v1h7zM2.5 4v9a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2V4h-11zm11 9a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1V4h9v9z" />
+                        </svg>
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
     {% empty %}
-        <p>No comments yet.</p>
+    <p>No comments yet.</p>
     {% endfor %}
 </div>

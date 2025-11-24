@@ -1,57 +1,58 @@
-<!-- ADD COMMENT TEMPLATE
-     Purpose:
-       Renders a standalone page that allows users to add a
-       new comment to a specific blog post.
-     ---------------------------------------------------------
-     Used when:
-       - The user submits a comment via a normal HTTP request.
-       - The `add_comment_to_post` view renders this template
-         if `form.is_valid()` fails or method == "GET". -->
+<!-------------------------------------------
+  ADD COMMENT TEMPLATE
+-------------------------------------------
+  Provides a standalone page for submitting a new comment on a specific blog post.
+  The user submits a comment via a normal HTTP request.
+-------------------------------------------
+-->
 
 {% extends 'blog/base.html' %}
 
 {% block content %}
+<!-- ===== Main container for add comment page ===== -->
 <div
   style="min-height: 80vh; background: #fff; display: flex; align-items: center; justify-content: center; padding: 10px;">
   <div style="display: flex; gap: 48px; align-items: center; justify-content: center;">
+
+    <!-- Comment form card -->
     <div class="login-card"
       style="background: #fffbfb; border-radius: 18px; box-shadow: 0 2px 16px rgba(207,109,150,0.08); padding: 50px 50px 60px 50px; max-width: 520px; min-width: 420px; width: 100%; text-align: center;">
+      
+      <!-- Form heading and subtitle -->
       <h1 style="font-family: 'Lobster', cursive; color: #a55c8f; font-size: 2.2rem; margin-bottom: 8px;">New comment
       </h1>
+
       <div style="color: #6c757d; font-size: 1.08rem; margin-bottom: 18px;">We love hearing your thoughts! Share your
         feedback below!</div>
+
+      <!-- ===== Comment form ===== -->
       <form method="POST" class="post-form" style="text-align:left;">{% csrf_token %}
+
+        <!-- Author name input -->
         <div style="margin-bottom: 16px; display: flex; align-items: center; gap: 0px; justify-content: flex-start;">
           <label for="id_author"
             style="font-weight: 500; color: #6c757d; min-width: 80px; text-align: left;">Name</label>
           <div style="flex: 1;">{{ form.author }}</div>
         </div>
+
+        <!-- Comment text input -->
         <div
           style="margin-bottom: 16px; display: flex; align-items: flex-start; gap: 0px; justify-content: flex-start;">
           <label for="id_text"
             style="font-weight: 500; color: #6c757d; min-width: 80px; text-align: left;">Comment</label>
           <div style="flex: 1;">{{ form.text }}</div>
         </div>
-        <style>
-          .login-card input,
-          .login-card textarea {
-            border-radius: 7px !important;
-            border: 1px solid #a55c8f !important;
-            box-shadow: none !important;
-          }
-        </style>
-        <style>
-          .login-card textarea {
-            min-height: 160px !important;
-            max-height: 220px !important;
-            height: 180px !important;
-          }
-        </style>
+
+        <!-- Submit button -->
         <button type="submit" class="save btn btn-secondary" style="width: 100%; margin-bottom: 10px;">Send</button>
       </form>
+
+      <!-- Cancel button: returns user to post detail without submitting -->
       <a href="{% url 'post_detail' pk=post.pk %}" class="btn btn-secondary"
         style="width: 100%; margin-top: 18px;">Cancel</a>
     </div>
+    
+    <!-- Illustration image -->
     <div class="comment-illustration" style="display: flex; align-items: center; justify-content: center;">
       <img src="/static/blog/img/illustration.jpg" alt="Comment illustration"
         style="max-width: 500px; width: 200%; height: auto;">

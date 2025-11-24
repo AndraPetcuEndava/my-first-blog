@@ -4,36 +4,43 @@ from django.utils import timezone
 import re
 
 
-# ------------------------------
+# ==============================
 # BLOG POST MODEL
-# ------------------------------
+# ==============================
+
 class Post(models.Model):
-    # Relationship: every Post has one author (a User)
+    # ForeignKey to User: each post has one author
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
-    # Post content fields
-    title = models.CharField(max_length=200)
+    # Main content fields
+    title = models.CharField(max_length=200)  # Post title
     from ckeditor_uploader.fields import RichTextUploadingField
-    text = RichTextUploadingField()
-    image = models.ImageField(upload_to="post_images/", blank=True, null=True)
+
+    text = RichTextUploadingField()  # Rich text content (with CKEditor: images, formatting, etc.)
+    image = models.ImageField(
+        upload_to="post_images/", blank=True, null=True
+    )  # Optional image
 
     # Timestamps
     created_date = models.DateTimeField(default=timezone.now)
-    published_date = models.DateTimeField(blank=True, null=True)
+    published_date = models.DateTimeField(
+        blank=True, null=True
+    )
+
 
     def publish(self):
-        """Mark post as published by setting the published_date to now."""
+       # Mark post as published by setting the published_date to now.
         self.published_date = timezone.now()
         self.save()
 
     def preview_html(self, word_limit=20):
+        # Create a short preview version of the post text for displaying in post cards
         from django.utils.html import strip_tags
         from django.utils.safestring import mark_safe
         import re
 
-        # Remove HTML tags for word count, but return HTML for display
         text = self.text
-        # Strip leading/trailing whitespace and blank lines
+        # Remove HTML tags and unnecessary spaces or blank lines
         text_stripped = re.sub(r"^(\s|&nbsp;)+", "", strip_tags(text))
         words = text_stripped.split()
         if len(words) > word_limit:
@@ -42,30 +49,30 @@ class Post(models.Model):
         return mark_safe(text_stripped)
 
     def __str__(self):
-        """Readable representation in admin or shell."""
+        # String representation for admin/shell: show the post title.
         return self.title
 
     def approved_comments_count(self):
+        # Return the number of approved comments for this post.
         return self.comments.filter(approved_comment=True).count()
 
 
-# ------------------------------
+# ==============================
 # COMMENT MODEL
-# ------------------------------
-
+# ==============================
 
 class Comment(models.Model):
-    # Each comment belongs to a specific Post
+    # ForeignKey to Post: each comment belongs to a post
     post = models.ForeignKey(
         "blog.Post", on_delete=models.CASCADE, related_name="comments"
     )
 
-    # Replies: parent comment (null for top-level)
+    # Replies
     parent = models.ForeignKey(
         "self", null=True, blank=True, related_name="replies", on_delete=models.CASCADE
     )
 
-    # Basic comment info
+    # Comment content
     author = models.CharField(max_length=200)
     text = models.TextField()
 
@@ -76,13 +83,14 @@ class Comment(models.Model):
     approved_comment = models.BooleanField(default=False)
 
     def approve(self):
+        # Mark this comment as approved.
         self.approved_comment = True
         self.save()
 
     def __str__(self):
-        """Readable representation: shows part of the comment text."""
+        # String representation: show the first 50 chars of the comment text.
         return self.text[:50]
 
     class Meta:
-        ordering = ["-created_date"]  # newest first
-
+        # Order comments by newest first
+        ordering = ["-created_date"]

@@ -1,14 +1,18 @@
-<!-- Displays a single blog post in detail, with:
-       - Full post content
-       - Action buttons (publish/edit/delete)
-       - Comment form (normal + modal)
-       - Dynamic AJAX comment loading
-     --------------------------------------------------------- -->
+<!-------------------------------------------
+    post_detail.html
+-------------------------------------------
+    Displays a single blog post in detail, with:
+        - Full post content
+        - Action buttons (publish/edit/delete)
+        - Comment/Reply form
+        - Dynamic AJAX comment/reply loading (AJAX)
+-------------------------------------------
+-->
 
 {% extends 'blog/base.html' %}
 
 {% block content %}
-<!-- Popup for comment approval notification -->
+<!-- ===== Popup for comment approval notification ===== -->
 {% if messages %}
 <div id="comment-approval-popup" class="alert alert-success text-center"
     style="position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 9999; min-width: 300px; max-width: 90vw;">
@@ -16,24 +20,32 @@
     {{ message }}
     {% endfor %}
 </div>
+
 <script>
     setTimeout(function () {
         var popup = document.getElementById('comment-approval-popup');
         if (popup) popup.style.display = 'none';
     }, 4000);
 </script>
+
 {% endif %}
-<!-- Banner section for post detail -->
+<!-- ===== Banner section for post detail ===== -->
 <section class="hero-section text-white py-5 full-width-banner post-detail"
     style="background: linear-gradient(rgba(25,43,55,0.6), rgba(25,43,55,0.6)), url('/static/blog/img/photo-post_detail.jpg') center/cover no-repeat; border-radius: 0; width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; min-height: 190px;">
 </section>
+
+<!-- ===== Main post content container ===== -->
 <div class="post-article-container" style="overflow-x:hidden;">
     <div class="w-100 px-5">
         <div style="display: flex; align-items: center; justify-content: space-between;">
+
+            <!-- Post title and action buttons -->
             <h1 class="text-start" style="margin-bottom: 0;">{{ post.title }}</h1>
             <div class="actions-row" style="display: flex; gap: 8px;">
                 {% if user.is_authenticated %}
                 {% if not post.published_date %}
+
+                <!-- Publish button (only for drafts) -->
                 <form method="post" action="{% url 'post_publish' pk=post.pk %}" style="display:inline;">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-secondary" title="Publish">
@@ -41,9 +53,13 @@
                     </button>
                 </form>
                 {% endif %}
+
+                <!-- Edit button -->
                 <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}" title="Edit">
                     {% include './icons/pencil-fill.svg' %}
                 </a>
+
+                <!-- Delete button -->
                 <form method="post" action="{% url 'post_remove' pk=post.pk %}" style="display:inline;">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-secondary" title="Delete">
@@ -53,6 +69,8 @@
                 {% endif %}
             </div>
         </div>
+
+        <!-- Post text -->
         <div class="post-text text-start">{{ post.text|safe }}</div>
     </div>
 </div>
@@ -61,6 +79,7 @@
 <div style="height: 32px;"></div>
 
 {% if post.published_date %}
+<!-- ===== Comments section (only for published posts) ===== -->
 <div id="comments-part">
     <div id="comments-list">
         {% include 'blog/comments_list.html' %}
@@ -68,11 +87,12 @@
 </div>
 {% endif %}
 
-<!-- ===================== COMMENT MODAL ===================== -->
+<!-- ===== COMMENT MODAL ===== -->
 <div class="modal fade" id="addCommentModal" tabindex="-1" aria-labelledby="addCommentModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <!-- unique id + shared class -->
+
+            <!-- Modal comment form (AJAX) -->
             <form id="comment-form-modal" class="js-comment-form" method="POST"
                 action="{% url 'add_comment_to_post' pk=post.pk %}">
                 <div class="modal-header">
@@ -81,41 +101,30 @@
                 </div>
                 <div class="modal-body">
                     {% csrf_token %}
-                    <h5 class="modal-title" id="addCommentModalLabel">New comment</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <!-- Add your comment fields here -->
+                    <!-- ... -->
+                    <button type="submit" class="btn btn-secondary">Send</button>
                 </div>
-                <div class="modal-body">
-                    {% csrf_token %}
-                    <div class="modal-body">
-                        {% csrf_token %}
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addCommentModalLabel">New comment</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            {% csrf_token %}
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-secondary">Send</button>
-                        </div>
             </form>
         </div>
     </div>
 </div>
 
-
-<!-- ===================== AJAX HANDLERS ===================== -->
+<!-- ===== AJAX logic for comments/replies/moderation ===== -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const listEl = document.getElementById('comments-list');
         const sectionEl = document.getElementById('comments-part');
-        // Inject authentication status from Django
+
         const isAuthenticated = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
-        // Keep viewport anchored on comments after each update
+
+        // Helper: keep viewport anchored on comments after each update
         function stayInComments() {
             if (sectionEl) sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // ADD COMMENT (works for inline + modal via shared class)
+        // ADD COMMENT
+        // Handle all comment form submissions
         document.querySelectorAll('.js-comment-form').forEach((form) => {
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -127,17 +136,21 @@
                 if (res.ok) {
                     listEl.innerHTML = await res.text();
                     form.reset();
+
+                    // If the modal was used, close it after submission
                     const modalEl = document.getElementById('addCommentModal');
                     if (modalEl && window.bootstrap) {
                         const modal = window.bootstrap.Modal.getInstance(modalEl);
                         if (modal) modal.hide();
                     }
+
+                    // Keep admins/moderators anchored on the comments block
                     if (isAuthenticated) stayInComments();
                 }
             });
         });
 
-        // REPLY TO COMMENT (AJAX, stays in place, works for all reply forms)
+        // Handle reply form submissions (AJAX, for all reply forms)
         document.addEventListener('submit', async (e) => {
             const form = e.target.closest('.reply-form');
             if (!form) return;
@@ -149,13 +162,14 @@
             });
             if (res.ok) {
                 listEl.innerHTML = await res.text();
+
                 // Reset all reply forms after update
                 document.querySelectorAll('.reply-form').forEach(f => f.reset && f.reset());
                 if (isAuthenticated) stayInComments();
             }
         });
 
-        // ------------------- APPROVE / DELETTE ---------------
+        // Handle approve/delete actions for comments (AJAX)
         document.addEventListener('click', async (e) => {
             const actionEl = e.target.closest('.js-comment-action');
             if (!actionEl) return;
@@ -180,7 +194,7 @@
             }
         });
 
-        //------------------- CSFR helper -------------------
+        // Helper to get CSRF token from cookies (Standard Django method)
         function getCookie(name) {
             let c = document.cookie ? document.cookie.split(';') : [];
             for (let i = 0; i < c.length; i++) {
@@ -193,4 +207,5 @@
         }
     });
 </script>
+
 {% endblock %}

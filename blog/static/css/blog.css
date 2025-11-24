@@ -1,9 +1,122 @@
-/* =========================================================
+/* -------------------------------------------
+    POST DRAFT LIST PAGE (Draft Card & Button Styles)
+------------------------------------------- */
+
+.draft-card .btn.btn-secondary {
+    transition: background 0.2s, color 0.2s, border 0.2s;
+}
+
+.draft-card .btn.btn-secondary:hover {
+    background: #a55c8f !important;
+    color: #fff !important;
+    border: 2px solid #a55c8f !important;
+}
+
+.draft-card .btn.btn-secondary:hover svg {
+    fill: #fff !important;
+}
+
+.draft-card {
+    transition: border 0.1s;
+    border: 0px solid transparent;
+}
+
+.draft-card:hover {
+    border: 3px solid #a55c8f;
+    box-shadow: none;
+    transform: none;
+}
+
+/* ---------------------------------------------------------
+   POST EDIT PAGE (CKEditor & Form Styles)
+   --------------------------------------------------------- */
+.ckeditor-wrapper .cke {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 10px !important;
+}
+
+.ckeditor-wrapper .cke_top {
+    background: #f8f3fa !important;
+    border: none !important;
+    border-radius: 10px 10px 0 0 !important;
+}
+
+.ckeditor-wrapper .cke_contents {
+    background: #fff !important;
+    border-radius: 0 0 10px 10px !important;
+    border: none !important;
+    min-height: 120px !important;
+}
+
+.ckeditor-wrapper .cke_bottom {
+    background: #f8f3fa !important;
+    border: none !important;
+    border-radius: 0 0 10px 10px !important;
+}
+
+.ckeditor-wrapper .cke_inner {
+    border-radius: 10px !important;
+}
+
+/* General input and styling for login and edit forms */
+.login-card.login-bg {
+    background: #fef7f7 !important;
+    border-radius: 12px;
+    padding: 32px 28px;
+    box-shadow: 0 2px 8px rgba(207, 109, 150, 0.07);
+    margin-bottom: 32px;
+}
+.login-card input,
+.login-card textarea {
+    border-radius: 7px !important;
+    border: 1px solid #a55c8f !important;
+    box-shadow: none !important;
+}
+
+.login-card textarea {
+    min-height: 120px !important;
+    max-height: 180px !important;
+    height: 140px !important;
+}
+
+/* Button hover and transition effects */
+label[for="id_image"],
+.save.btn.btn-secondary,
+a.btn.btn-secondary {
+    transition: background 0.2s, color 0.2s, border 0.2s;
+}
+
+label[for="id_image"]:hover,
+.save.btn.btn-secondary:hover,
+a.btn.btn-secondary:hover {
+    background: #a55c8f !important;
+    color: #fff !important;
+    border: 2px solid #a55c8f !important;
+}
+
+label[for="id_image"]:hover span {
+    color: #fff !important;
+}
+
+label[for="id_image"]:hover svg {
+    fill: #fff !important;
+}
+
+/* Login card input styling */
+.login-card input {
+    border-radius: 7px !important;
+    border: 1px solid #a55c8f;
+    padding: 6px 12px;
+    font-size: 1rem;
+}
+
+/* -------------------------------------------
    GLOBAL HEADINGS & TYPOGRAPHY
-   =========================================================
-   Affects all <h1>, <h2>, <h3>, <h4> tags and linked titles.
-   Changes their font to 'Lobster' and applies brand color.
-========================================================= */
+------------------------------------------- */
+
+/* Applies the font and brand color to all headers and linked titles */
 h1 a,
 h2 a {
     color: #a55c8f;
@@ -22,12 +135,11 @@ h4 {
 }
 
 
-/* =========================================================
-   PAGE HEADER BAR (TOP AREA)
-   =========================================================
-   Styles the red/orange navigation header at the top of pages.
-   Includes title color, spacing, and overall background.
-========================================================= */
+/* -------------------------------------------
+   PAGE HEADER BAR
+------------------------------------------- */
+
+/* Styles the top navigation bar’s background, padding, and title color. */
 .page-header {
     background-color: #a55c8f;
     margin-top: 0;
@@ -46,12 +158,11 @@ h4 {
 }
 
 
-/* =========================================================
+/* -------------------------------------------
    FORM ELEMENTS (POST FORM, COMMENT FORM)
-   =========================================================
-   Expands textareas and inputs to 100% width,
-   and positions Save buttons to the right.
-========================================================= */
+------------------------------------------- */
+
+/* Ensures form fields span full width and aligns Save buttons to the right. */
 .save {
     float: right;
 }
@@ -62,12 +173,11 @@ h4 {
 }
 
 
-/* =========================================================
+/* -------------------------------------------
    HEADER MENU & ICON BUTTONS
-   =========================================================
-   Controls icons and text buttons in the header navigation bar.
-   Changes hover colors, font sizes, and spacing between buttons.
-========================================================= */
+------------------------------------------- */
+
+/*  Styles for icons and menu links in the navigation bar. */
 .top-menu,
 .top-menu:hover,
 .top-menu:visited {
@@ -80,12 +190,11 @@ h4 {
 }
 
 
-/* =========================================================
+/* -------------------------------------------
    BLOG POSTS — LIST & DETAIL VIEW
-   =========================================================
-   Handles spacing, title colors, and hover effects
-   for posts displayed in lists or individually.
-========================================================= */
+------------------------------------------- */
+
+/* Manages title colors, hover effects, and spacing for all blog post cards */
 .post {
     margin-bottom: 70px;
 }
@@ -122,7 +231,7 @@ h4 {
     align-items: center;
 }
 
-/* Post and card hover effect */
+/* Hover animation for post cards */
 .post:hover,
 .card:hover {
     box-shadow: 0 8px 24px rgba(207, 109, 150, 0.18), 0 1.5px 6px rgba(0, 0, 0, 0.08);
@@ -134,12 +243,11 @@ h4 {
 }
 
 
-/* =========================================================
+/* -------------------------------------------
    BUTTON STYLES
-   =========================================================
-   Reusable styling for all secondary buttons such as
-   Publish, Delete, Edit, etc.
-========================================================= */
+------------------------------------------- */
+
+/* Defines consistent look for secondary buttons (Publish, Delete, Edit, etc.) */
 .btn-secondary {
     display: flex;
     align-items: center;
@@ -167,12 +275,10 @@ h4 {
 }
 
 
-/* =========================================================
+/* -------------------------------------------
    ACTION BUTTON GROUPS (publish, edit, delete, etc.)
-   =========================================================
-   Arranges buttons horizontally (actions-row) or vertically
-   (actions-date-vertical) depending on the template layout.
-========================================================= */
+------------------------------------------- */
+
 .actions-right,
 .actions-date,
 .actions-row,
@@ -234,12 +340,10 @@ h4 {
 }
 
 
-/* =========================================================
+/* -------------------------------------------
    HEADER ACTION BAR (LOGO + NAVIGATION LINKS)
-   =========================================================
-   Styles the top orange bar including the blog title and
-   right-side links (Login, Logout, New Post, Drafts).
-========================================================= */
+------------------------------------------- */
+
 .header-actions {
     background-color: #fff;
     margin-top: 0;
@@ -252,7 +356,7 @@ h4 {
     width: 100%;
 }
 
-/* Blog title (left side of header) */
+/* Blog title */
 .header-actions h1,
 .header-actions h1 a {
     color: #a55c8f;
@@ -295,12 +399,11 @@ h4 {
 }
 
 
-/* =========================================================
+/* -------------------------------------------
    ICON BUTTONS (top menu icons, logout)
-   =========================================================
-   Controls icon sizing and hover transitions for the
-   navigation bar and logout button.
-========================================================= */
+------------------------------------------- */
+
+/* Controls icon sizing and hover transitions for the navigation bar and logout button. */
 .top-menu {
     font-size: 36pt;
     color: #fff;
@@ -347,12 +450,10 @@ h4 {
 }
 
 
-/* =========================================================
+/* -------------------------------------------
    COMMENTS SECTION
-   =========================================================
-   Applies soft gray background and spacing to comment area
-   on post detail pages.
-========================================================= */
+------------------------------------------- */
+
 .comments-section {
     background: #fafafa;
     border-radius: 18px;
@@ -384,7 +485,7 @@ h4 {
     align-items: center;
 }
 
-/* Comment author and text styling */
+/* Comment text formatting */
 .comment-author {
     font-weight: bold;
     color: #222;
@@ -409,11 +510,9 @@ h4 {
     margin: 18px 0;
 }
 
-/* =========================================================
+/* -------------------------------------------
    HERO SECTION STYLES
-   =========================================================
-   Styles for the hero section at the top of blog pages.
-   Includes background image, text styles, and layout. */
+------------------------------------------- */
 
 .hero-section {
     border-radius: 16px;
@@ -422,16 +521,7 @@ h4 {
     margin-bottom: 40px;
 }
 
-.hero-section h1 {
-    font-family: 'Lobster', cursive;
-    font-size: clamp(2rem, 3vw + 1rem, 3.5rem);
-}
-
-.hero-section p {
-    font-size: 1.25rem;
-    color: #f9f9f9;
-}
-
+/* Background banner with gradient overlay */
 .full-width-banner {
     width: 100vw;
     position: relative;
@@ -443,6 +533,7 @@ h4 {
     background: linear-gradient(rgba(25, 43, 55, 0.6), rgba(25, 43, 55, 0.6)), url('/static/blog/img/your-photo.jpg') center/cover no-repeat;
 }
 
+/* Banner overlay blur effect */
 .full-width-banner::before {
     content: "";
     position: absolute;
@@ -455,16 +546,17 @@ h4 {
     z-index: 1;
 }
 
-/* Custom blur for post_list */
+/* Custom blur for post_list page */
 .full-width-banner.post-list::before {
     filter: blur(6px);
 }
 
-/* Custom blur for post_detail */
+/* Custom blur for post_detail page */
 .full-width-banner.post-detail::before {
     filter: blur(1px);
 }
 
+/* Ensure hero section content is above overlay */
 .hero-section>.container,
 .hero-section>.row,
 .hero-section>.col-md-3,
@@ -473,6 +565,7 @@ h4 {
     z-index: 2;
 }
 
+/* Responsive iframe for embedded videos */
 iframe {
     max-width: 100%;
     height: auto;
@@ -480,14 +573,22 @@ iframe {
     border: none;
 }
 
-/* =========================================================
+/* -------------------------------------------
    CKEDITOR STYLES
-   =========================================================
-   Custom styles for CKEditor integration,
-   including rounded corners, brand border, and subtle shadow.
-========================================================= */
+------------------------------------------- */
+
+/* Adds rounded borders and soft shadows to CKEditor’s UI */
 .cke_chrome {
     border-radius: 12px !important;
     border: 2px solid #a55c8f !important;
-    box-shadow: 0 2px 8px rgba(207,109,150,0.07);
+    box-shadow: 0 2px 8px rgba(207, 109, 150, 0.07);
 }
+
+
+
+
+
+
+
+
+

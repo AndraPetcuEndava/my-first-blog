@@ -1,20 +1,40 @@
-<!-- Used for creating or editing a blog post.
-The same template is shared by both "new post" and "edit post" views. -->
+<!-------------------------------------------
+     POST EDIT PAGE
+-------------------------------------------
+    Used for creating or editing a blog post.
+    Shared by both "new post" and "edit post" views.
+    Contains form for title, text (CKEditor), and image upload.
+    Includes preview and remove for image, and custom styles/scripts for UX.
+-------------------------------------------
+-->
 
 {% extends 'blog/base.html' %}
 
 {% block content %}
+<!-- ===== Main container for the edit/create post page ===== -->
 <div style="min-height: 80vh; background: #fff; display: flex; align-items: flex-start; justify-content: center; gap: 48px;">
+    
+    <!-- Form section -->
     <div class="form-container">
-        <div class="login-card" style="background: #fdf9fc; border-radius: 28px; box-shadow: 0 2px 16px rgba(207,109,150,0.08); padding: 48px 48px 36px 48px; max-width: 800px; min-width: 520px; width: 100%; text-align: center;">
+        <div class="login-card"
+            style="background: #fdf9fc; border-radius: 28px; box-shadow: 0 2px 16px rgba(207,109,150,0.08); padding: 48px 48px 36px 48px; max-width: 800px; min-width: 520px; width: 100%; text-align: center;">
+
             <h1 style="font-family: 'Lobster', cursive; color: #a55c8f; font-size: 2.2rem; margin-bottom: 8px;">New post</h1>
+
             <div style="color: #6c757d; font-size: 1.08rem; margin-bottom: 18px;">We love hearing your stories! Share your content with our community!</div>
-            <form method="POST" enctype="multipart/form-data" class="post-form" style="text-align:left;">{% csrf_token %}
+            
+            <!-- Post form: handles both new and edit -->
+            <form method="POST" enctype="multipart/form-data" class="post-form" style="text-align:left;">
+                {% csrf_token %}
                 {{ form.media }}
+
+                <!-- Title field -->
                 <div style="margin-bottom: 16px; display: flex; align-items: center; gap: 0px; justify-content: flex-start;">
                     <label for="id_title" style="font-weight: 500; color: #6c757d; min-width: 80px; text-align: left;">Title:</label>
                     <div style="flex: 1;">{{ form.title }}</div>
                 </div>
+
+                <!-- Text field (CKEditor) -->
                 <div style="margin-bottom: 16px; display: flex; align-items: flex-start; gap: 0px; justify-content: flex-start;">
                     <label for="id_text" style="font-weight: 500; color: #6c757d; min-width: 80px; text-align: left;">Text:</label>
                     <div style="flex: 1;">
@@ -23,107 +43,67 @@ The same template is shared by both "new post" and "edit post" views. -->
                         </div>
                     </div>
                 </div>
+
+                <!-- Image upload field -->
                 <div style="margin-bottom: 16px;">
                     <label for="id_image" style="cursor:pointer; display:inline-block; width: 160px; border: 2px solid #a55c8f; border-radius: 10px; background: #fff; display: flex; align-items: center; justify-content: center; flex-direction: row; padding: 6px 0; font-size: 1rem; color: #a55c8f; margin-bottom: 0; box-shadow: none;">
+
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#a55c8f" viewBox="0 0 16 16" style="margin-right: 6px;">
-                            <rect x="7" y="3" width="2" height="10" rx="1"/>
-                            <rect x="3" y="7" width="10" height="2" rx="1"/>
+                            <rect x="7" y="3" width="2" height="10" rx="1" />
+                            <rect x="3" y="7" width="10" height="2" rx="1" />
                         </svg>
                         <span style="color:#a55c8f; font-size:1rem;">Add Photo</span>
                         <input id="id_image" name="image" type="file" style="display:none;">
                     </label>
                 </div>
+
+                <!-- Image preview and remove button -->
                 <div id="image-preview-container" style="margin-bottom: 16px;">
                     <span style="display:block; font-weight:500; margin-bottom:6px; color: #6c757d; ">Current image:</span>
                     <div style="display: flex; flex-direction: column; align-items: flex-start;">
-                        <img id="image-preview" src="{% if form.instance.image %}{{ form.instance.image.url }}{% endif %}" alt="Current image"
-                            {% if form.instance.image %}
-                                style="max-width: 300px; max-height: 300px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07);"
+                        <img id="image-preview"
+                            src="{% if form.instance.image %}{{ form.instance.image.url }}{% endif %}"
+                            alt="Current image" {% if form.instance.image %}
+                            style="max-width: 300px; max-height: 300px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07);"
                             {% else %}
-                                style="display:none; max-width: 300px; max-height: 300px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07);"
-                            {% endif %}
-                        >
+                            style="display:none; max-width: 300px; max-height: 300px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07);"
+                            {% endif %}>
+
+                        <!-- Remove image button and hidden input -->
                         <button type="button" id="remove-image-btn" class="save btn btn-secondary" style="margin-top: 10px; width: 140px;">Remove Photo</button>
                         <input type="hidden" name="remove_image" id="remove_image" value="0">
                     </div>
                 </div>
+
+                <!-- Save and publish/cancel buttons -->
                 <button type="submit" class="save btn btn-secondary" style="width: 100%; border: 2px solid #a55c8f; color: #a55c8f; background: #fff; border-radius: 10px; font-size: 1.15rem; margin-bottom: 10px; box-shadow: none;">Save</button>
-                                                {% if not form.instance.pk %}
-                                                <button type="submit" name="publish_immediately" value="1" class="save btn btn-secondary" style="width: 100%; border: 2px solid #a55c8f; color: #a55c8f; background: #fff; border-radius: 10px; font-size: 1.15rem; margin-bottom: 10px; box-shadow: none;">Publish Immediately</button>
-                                                {% endif %}
-                                {% if form.instance.pk %}
-                                    <a href="{% url 'post_detail' pk=form.instance.pk %}" class="btn btn-secondary" style="width: 100%; border: 2px solid #a55c8f; color: #a55c8f; background: #fff; border-radius: 10px; font-size: 1.15rem; margin-bottom: 0; box-shadow: none;">Cancel</a>
-                                {% else %}
-                                    <a href="{% url 'post_list' %}" class="btn btn-secondary" style="width: 100%; border: 2px solid #a55c8f; color: #a55c8f; background: #fff; border-radius: 10px; font-size: 1.15rem; margin-bottom: 0; box-shadow: none;">Cancel</a>
-                                {% endif %}
-                <style>
-                    /* CKEditor wrapper for modern look */
-                    .ckeditor-wrapper .cke{
-                        background: transparent !important;
-                        border: none !important;
-                        box-shadow: none !important;
-                        border-radius: 10px !important;
-                    }
-                    .ckeditor-wrapper .cke_top{
-                        background: #f8f3fa !important;
-                        border: none !important;
-                        border-radius: 10px 10px 0 0 !important;
-                    }
-                    .ckeditor-wrapper .cke_contents{
-                        background: #fff !important;
-                        border-radius: 0 0 10px 10px !important;
-                        border: none !important;
-                        min-height: 120px !important;
-                    }
-                    .ckeditor-wrapper .cke_bottom{
-                        background: #f8f3fa !important;
-                        border: none !important;
-                        border-radius: 0 0 10px 10px !important;
-                    }
-                    .ckeditor-wrapper .cke_inner{
-                        border-radius: 10px !important;
-                    }
-                    .login-card input,
-                    .login-card textarea {
-                        border-radius: 7px !important;
-                        border: 1px solid #a55c8f !important;
-                        box-shadow: none !important;
-                    }
-                    .login-card textarea {
-                        min-height: 120px !important;
-                        max-height: 180px !important;
-                        height: 140px !important;
-                    }
-                    label[for="id_image"],
-                    .save.btn.btn-secondary,
-                    a.btn.btn-secondary {
-                        transition: background 0.2s, color 0.2s, border 0.2s;
-                    }
-                    label[for="id_image"]:hover,
-                    .save.btn.btn-secondary:hover,
-                    a.btn.btn-secondary:hover {
-                        background: #a55c8f !important;
-                        color: #fff !important;
-                        border: 2px solid #a55c8f !important;
-                    }
-                    label[for="id_image"]:hover span {
-                        color: #fff !important;
-                    }
-                    label[for="id_image"]:hover svg {
-                        fill: #fff !important;
-                    }
-                </style>
+                {% if not form.instance.pk %}
+
+                <!-- Only show publish immediately for new posts -->
+                <button type="submit" name="publish_immediately" value="1" class="save btn btn-secondary" style="width: 100%; border: 2px solid #a55c8f; color: #a55c8f; background: #fff; border-radius: 10px; font-size: 1.15rem; margin-bottom: 10px; box-shadow: none;">Publish Immediately</button>
+                {% endif %}
+                {% if form.instance.pk %}
+
+                <!-- Cancel button for edit mode -->
+                <a href="{% url 'post_detail' pk=form.instance.pk %}" class="btn btn-secondary" style="width: 100%; border: 2px solid #a55c8f; color: #a55c8f; background: #fff; border-radius: 10px; font-size: 1.15rem; margin-bottom: 0; box-shadow: none;">Cancel</a>
+                {% else %}
+
+                <!-- Cancel button for new post mode -->
+                <a href="{% url 'post_list' %}" class="btn btn-secondary" style="width: 100%; border: 2px solid #a55c8f; color: #a55c8f; background: #fff; border-radius: 10px; font-size: 1.15rem; margin-bottom: 0; box-shadow: none;">Cancel</a>
+                {% endif %}
+
+                <!-- JS for image preview and remove functionality -->
                 <script>
-                    document.addEventListener('DOMContentLoaded', function() {
+                    document.addEventListener('DOMContentLoaded', function () {
                         var fileInput = document.getElementById('id_image');
                         var previewImg = document.getElementById('image-preview');
                         var removeBtn = document.getElementById('remove-image-btn');
                         var removeInput = document.getElementById('remove_image');
                         if (fileInput) {
-                            fileInput.addEventListener('change', function(e) {
+                            fileInput.addEventListener('change', function (e) {
                                 if (fileInput.files && fileInput.files[0]) {
                                     var reader = new FileReader();
-                                    reader.onload = function(ev) {
+                                    reader.onload = function (ev) {
                                         previewImg.src = ev.target.result;
                                         previewImg.style.display = 'block';
                                         if (removeInput) removeInput.value = '0';
@@ -133,7 +113,7 @@ The same template is shared by both "new post" and "edit post" views. -->
                             });
                         }
                         if (removeBtn) {
-                            removeBtn.addEventListener('click', function() {
+                            removeBtn.addEventListener('click', function () {
                                 previewImg.src = '';
                                 previewImg.style.display = 'none';
                                 if (removeInput) removeInput.value = '1';
@@ -145,6 +125,8 @@ The same template is shared by both "new post" and "edit post" views. -->
             </form>
         </div>
     </div>
+    
+    <!-- Illustration section -->
     <div class="illustration-container">
         <img src="/static/blog/img/illustrationedit.png" alt="Post illustration" style="max-width: 440px; width: 100%; height: auto; margin-top: 70px;">
     </div>
