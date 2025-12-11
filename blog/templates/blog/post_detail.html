@@ -12,6 +12,15 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
+<script>
+    // Force reload if page is loaded from bfcache (back/forward cache)
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+</script>
+
 <!-- ===== Popup for comment approval notification ===== -->
 {% if messages %}
 <div id="comment-approval-popup" class="alert alert-success text-center"
@@ -125,6 +134,7 @@
 
         // ADD COMMENT
         // Handle all comment form submissions
+        // Like/dislike AJAX logic
         document.querySelectorAll('.js-comment-form').forEach((form) => {
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -168,6 +178,62 @@
                 if (isAuthenticated) stayInComments();
             }
         });
+        // Used after like/dislike actions to reflect updated counts
+        function reloadComments() {
+            fetch(window.location.pathname, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+                .then(res => res.text())
+                .then(html => {
+                    // Extract the comments section from the returned HTML
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = html;
+                    const newComments = tempDiv.querySelector('#comments-list');
+                    if (newComments && listEl) {
+                        listEl.innerHTML = newComments.innerHTML;
+                        attachReactionListeners();
+                    }
+                });
+        }
+
+        // It is called on page load AND after each comment reload
+        function attachReactionListeners() {
+            // Attach like button listeners
+            document.querySelectorAll('.js-like-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const commentId = this.getAttribute('data-id');
+                    fetch(`/comment/${commentId}/like/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'Accept': 'application/json',
+                        },
+                    })
+                        .then(() => {
+                            reloadComments();
+                        });
+                });
+            });
+            // Attach dislike button listeners
+            document.querySelectorAll('.js-dislike-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const commentId = this.getAttribute('data-id');
+                    fetch(`/comment/${commentId}/dislike/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'Accept': 'application/json',
+                        },
+                    })
+                        .then(() => {
+                            reloadComments();
+                        });
+                });
+            });
+        }
+
+        // Initial attach
+        attachReactionListeners();
 
         // Handle approve/delete actions for comments (AJAX)
         document.addEventListener('click', async (e) => {

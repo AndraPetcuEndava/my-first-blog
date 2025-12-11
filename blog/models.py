@@ -1,12 +1,31 @@
-from django.conf import settings
 from django.db import models
+from django.conf import settings
 from django.utils import timezone
 import re
+
+# ==============================
+# COMMENT REACTION MODEL
+# ==============================
+
+
+class CommentReaction(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    comment = models.ForeignKey(
+        "Comment", on_delete=models.CASCADE, related_name="reactions"
+    )
+    reaction = models.CharField(
+        max_length=7, choices=(("like", "Like"), ("dislike", "Dislike"))
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "comment")
 
 
 # ==============================
 # BLOG POST MODEL
 # ==============================
+
 
 class Post(models.Model):
     # ForeignKey to User: each post has one author
@@ -16,22 +35,28 @@ class Post(models.Model):
     title = models.CharField(max_length=200)  # Post title
     from ckeditor_uploader.fields import RichTextUploadingField
 
-    text = RichTextUploadingField()  # Rich text content (with CKEditor: images, formatting, etc.)
+    text = (
+        RichTextUploadingField()
+    )  # Rich text content (with CKEditor: images, formatting, etc.)
     image = models.ImageField(
         upload_to="post_images/", blank=True, null=True
     )  # Optional image
 
     # Timestamps
     created_date = models.DateTimeField(default=timezone.now)
-    published_date = models.DateTimeField(
-        blank=True, null=True
-    )
+    published_date = models.DateTimeField(blank=True, null=True)
 
+    # View counter
+    views = models.PositiveIntegerField(default=0)
 
     def publish(self):
-       # Mark post as published by setting the published_date to now.
+        # Mark post as published by setting the published_date to now.
         self.published_date = timezone.now()
         self.save()
+
+    def increment_views(self):
+        self.views += 1
+        self.save(update_fields=["views"])
 
     def preview_html(self, word_limit=20):
         # Create a short preview version of the post text for displaying in post cards
@@ -61,6 +86,7 @@ class Post(models.Model):
 # COMMENT MODEL
 # ==============================
 
+
 class Comment(models.Model):
     # ForeignKey to Post: each comment belongs to a post
     post = models.ForeignKey(
@@ -81,6 +107,10 @@ class Comment(models.Model):
 
     # Whether the comment has been approved by the blog author
     approved_comment = models.BooleanField(default=False)
+
+    # Like/dislike counters
+    likes = models.PositiveIntegerField(default=0)
+    dislikes = models.PositiveIntegerField(default=0)
 
     def approve(self):
         # Mark this comment as approved.
