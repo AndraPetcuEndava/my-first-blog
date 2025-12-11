@@ -1,3 +1,128 @@
+/* Highlight like/dislike button when pressed */
+.js-like-btn:active,
+.js-dislike-btn:active {
+    background: #a55c8f !important;
+    color: #fff !important;
+    border-color: #a55c8f !important;
+}
+/* Comment reaction icons and numbers */
+.comment-reaction {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 1rem;
+}
+.comment-reaction .thumbs-up {
+    color: #2e9c6a;
+}
+.comment-reaction .thumbs-down {
+    color: #d9534f;
+}
+.comment-reaction .reaction-count {
+    margin-left: 2px;
+    font-weight: 500;
+    font-size: 1rem;
+}
+.comment-reaction .thumbs-up + .reaction-count {
+    color: #2e9c6a;
+}
+.comment-reaction .thumbs-down + .reaction-count {
+    color: #d9534f;
+}
+/* Reply button style */
+.comment-btn-reply {
+    margin-bottom: 0;
+    color: #a55c8f;
+    background: #fff;
+    border: 2px solid #a55c8f;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    font-weight: 400;
+    padding: 2px 8px;
+    transition: background 0.2s, color 0.2s;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+}
+
+.comment-btn-reply:hover,
+.comment-btn-reply:focus {
+    background: #a55c8f;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Comment moderation buttons */
+.comment-btn-approve {
+    margin-bottom: 0;
+    color: #38c172;
+    background: #fff;
+    border: 2px solid #38c172;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-family: inherit;
+    font-weight: 400;
+    padding: 4px 14px;
+    transition: background 0.2s, color 0.2s;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+}
+
+.comment-btn-approve:hover,
+.comment-btn-approve:focus {
+    background: #38c172;
+    color: #fff;
+    text-decoration: none;
+}
+
+.comment-btn-disapprove {
+    margin-bottom: 0;
+    color: #e45967;
+    background: #fff;
+    border: 2px solid #e45967;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-family: inherit;
+    font-weight: 400;
+    padding: 4px 14px;
+    transition: background 0.2s, color 0.2s;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+}
+
+.comment-btn-disapprove:hover,
+.comment-btn-disapprove:focus {
+    background: #e45967;
+    color: #fff;
+    text-decoration: none;
+}
+
+.comment-btn-delete {
+    margin-bottom: 0;
+    color: #e45967;
+    background: #fff;
+    border: 2px solid #e45967;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-family: inherit;
+    font-weight: 400;
+    padding: 4px 14px;
+    transition: background 0.2s, color 0.2s;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+}
+
+.comment-btn-delete:hover,
+.comment-btn-delete:focus {
+    background: #dc3545;
+    color: #fff;
+    text-decoration: none;
+}
+
 /* -------------------------------------------
     COMMENTS SECTION STYLESHEET
 ------------------------------------------- */

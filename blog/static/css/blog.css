@@ -68,6 +68,7 @@
     box-shadow: 0 2px 8px rgba(207, 109, 150, 0.07);
     margin-bottom: 32px;
 }
+
 .login-card input,
 .login-card textarea {
     border-radius: 7px !important;
@@ -584,11 +585,32 @@ iframe {
     box-shadow: 0 2px 8px rgba(207, 109, 150, 0.07);
 }
 
+/* -------------------------------------------
+   COMMENT ACTION BUTTONS
+------------------------------------------- */
 
+.comment-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    background: #fff;
+    border: 2px solid #a55c8f;
+    border-radius: 12px;
+    margin: 0 6px;
+    padding: 0;
+    box-shadow: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
 
+.comment-action-btn:hover {
+    border-color: #d953a3;
+    box-shadow: 0 2px 8px rgba(207, 109, 150, 0.10);
+}
 
-
-
-
-
-
+.comment-action-btn svg {
+    display: block;
+    margin: auto;
+}
