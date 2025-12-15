@@ -142,6 +142,15 @@ INSTALLED_APPS += [
     "ckeditor_uploader",
 ]
 
+# Email backend for password reset (SendGrid)
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# EMAIL_HOST = "smtp.sendgrid.net"
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = "apikey"  # This is the string literal 'apikey', not your username
+# EMAIL_HOST_PASSWORD = os.environ.get("SENDGRID_API_KEY", "")
+# DEFAULT_FROM_EMAIL = "no-reply@yourdomain.com"  # Change to your verified sender
+
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_IMAGE_BACKEND = "pillow"
 CKEDITOR_ALLOW_NONIMAGE_FILES = True

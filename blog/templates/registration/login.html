@@ -16,7 +16,7 @@
 
 {% block content %}
 <!-- ===== Login page main container ===== -->
-<div class="login-bg" style="min-height: 80vh; display: flex; align-items: flex-start; justify-content: center; padding-top: 40px;">
+<div class="login-bg" style="min-height: 80vh; display: flex; align-items: flex-start; justify-content: center; padding-top: 10px;">
 
     <div class="login-card login-bg" style="border-radius: 18px; box-shadow: 0 2px 16px rgba(207,109,150,0.08); padding: 32px 32px 24px 32px; max-width: 400px; width: 100%; text-align: center;">
 
@@ -64,6 +64,9 @@
             <input type="hidden" name="next" value="{{ next }}" />
         </form>
         
+        <!-- Forgot password link -->
+        <a href="{% url 'password_reset' %}" style="display:block; margin: 10px 0 0 0; color: #a55c8f; font-weight: 500; text-align: right; text-decoration: underline; font-size: 1rem;">Forgot your password?</a>
+
         <!-- Return to blog button -->
         <a href="/" class="btn btn-secondary" style="width: 100%; margin-top: 18px;">Return to Blog</a>
     </div>
