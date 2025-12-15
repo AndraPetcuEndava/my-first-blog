@@ -7,6 +7,10 @@ from django.views.decorators.http import require_POST
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 
+# AJAX endpoints for liking/disliking comments
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+
 
 # LIST VIEW – show published posts on the homepage
 def post_list(request):
@@ -19,6 +23,8 @@ def post_list(request):
 # DETAIL VIEW – show a single post when its title is clicked
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
+    if not request.user.is_authenticated:
+        post.increment_views()
     return render(request, "blog/post_detail.html", {"post": post})
 
 
@@ -148,14 +154,151 @@ def comment_approve(request, pk):
     comment.approved_comment = True
     comment.save()
     post = comment.post
+    # AJAX: update comments section instantly
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return render(
+            request,
+            "blog/comments_list.html",
+            {"post": post, "user": request.user},
+        )
+    return redirect("post_detail", pk=post.pk)
+
+
+# LIKE COMMENT VIEW
+@require_POST
+def comment_like(request, pk):
+    from .models import Comment, CommentReaction
+
+    comment = get_object_or_404(Comment, pk=pk)
+    if request.user.is_authenticated:
+        user = request.user
+        reaction, created = CommentReaction.objects.get_or_create(
+            user=user, comment=comment
+        )
+        if not created:
+            if reaction.reaction == "like":
+                result = JsonResponse(
+                    {"likes": comment.likes, "dislikes": comment.dislikes}
+                )
+            elif reaction.reaction == "dislike":
+                comment.dislikes = max(comment.dislikes - 1, 0)
+                reaction.reaction = "like"
+                comment.likes += 1
+                reaction.save()
+                comment.save(update_fields=["likes", "dislikes"])
+                result = JsonResponse(
+                    {"likes": comment.likes, "dislikes": comment.dislikes}
+                )
+        else:
+            reaction.reaction = "like"
+            reaction.save()
+            comment.likes += 1
+            comment.save(update_fields=["likes"])
+            result = JsonResponse(
+                {"likes": comment.likes, "dislikes": comment.dislikes}
+            )
+    else:
+        # Unauthenticated: use session key
+        session_key = request.session.session_key
+        if not session_key:
+            request.session.create()
+            session_key = request.session.session_key
+        # Store reaction in session
+        key = f"comment_{comment.pk}_reaction"
+        prev_reaction = request.session.get(key)
+        if prev_reaction == "like":
+            result = JsonResponse(
+                {"likes": comment.likes, "dislikes": comment.dislikes}
+            )
+        elif prev_reaction == "dislike":
+            comment.dislikes = max(comment.dislikes - 1, 0)
+            comment.likes += 1
+            request.session[key] = "like"
+            comment.save(update_fields=["likes", "dislikes"])
+            result = JsonResponse(
+                {"likes": comment.likes, "dislikes": comment.dislikes}
+            )
+        else:
+            comment.likes += 1
+            request.session[key] = "like"
+            comment.save(update_fields=["likes"])
+            result = JsonResponse(
+                {"likes": comment.likes, "dislikes": comment.dislikes}
+            )
 
     # AJAX: allows the website to update the comments section without refreshing the entire page
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
         return render(
-            request, "blog/comments_list.html", {"post": post, "user": request.user}
+            request,
+            "blog/comments_list.html",
+            {"post": comment.post, "user": request.user},
         )
 
-    return redirect("post_detail", pk=post.pk)
+    return redirect("post_detail", pk=comment.post.pk)
+
+
+# DISLIKE COMMENT VIEW
+@require_POST
+def comment_dislike(request, pk):
+    from .models import Comment, CommentReaction
+
+    comment = get_object_or_404(Comment, pk=pk)
+    if request.user.is_authenticated:
+        user = request.user
+        reaction, created = CommentReaction.objects.get_or_create(
+            user=user, comment=comment
+        )
+        if not created:
+            if reaction.reaction == "dislike":
+                return JsonResponse(
+                    {"likes": comment.likes, "dislikes": comment.dislikes}
+                )
+            elif reaction.reaction == "like":
+                comment.likes = max(comment.likes - 1, 0)
+                reaction.reaction = "dislike"
+                comment.dislikes += 1
+                reaction.save()
+                comment.save(update_fields=["likes", "dislikes"])
+                return JsonResponse(
+                    {"likes": comment.likes, "dislikes": comment.dislikes}
+                )
+        else:
+            reaction.reaction = "dislike"
+            reaction.save()
+            comment.dislikes += 1
+            comment.save(update_fields=["dislikes"])
+            return JsonResponse({"likes": comment.likes, "dislikes": comment.dislikes})
+    else:
+        # Unauthenticated: use session key
+        session_key = request.session.session_key
+        if not session_key:
+            request.session.create()
+            session_key = request.session.session_key
+        key = f"comment_{comment.pk}_reaction"
+        prev_reaction = request.session.get(key)
+        if prev_reaction == "dislike":
+            return JsonResponse({"likes": comment.likes, "dislikes": comment.dislikes})
+        elif prev_reaction == "like":
+            comment.likes = max(comment.likes - 1, 0)
+            comment.dislikes += 1
+            request.session[key] = "dislike"
+            comment.save(update_fields=["likes", "dislikes"])
+            return JsonResponse({"likes": comment.likes, "dislikes": comment.dislikes})
+        else:
+            comment.dislikes += 1
+            request.session[key] = "dislike"
+            comment.save(update_fields=["dislikes"])
+            return JsonResponse({"likes": comment.likes, "dislikes": comment.dislikes})
+
+    # AJAX: allows the website to update the comments section without refreshing the entire page
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return render(
+            request,
+            "blog/comments_list.html",
+            {"post": comment.post, "user": request.user},
+        )
+
+    return redirect("post_detail", pk=comment.post.pk)
 
 
 # REMOVE COMMENT VIEW – delete a comment from a post
