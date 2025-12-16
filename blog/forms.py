@@ -1,5 +1,6 @@
 from django import forms
 from .models import Post, Comment
+from django.contrib.auth.forms import SetPasswordForm
 
 # ------------------------------
 # FORM FOR BLOG POSTS
@@ -26,3 +27,14 @@ class CommentForm(forms.ModelForm):
             "author",
             "text",
         )
+
+
+# ------------------------------
+# CUSTOM PASSWORD RESET FORM
+# ------------------------------
+
+
+class CustomSetPasswordForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["new_password2"].help_text = ""

@@ -40,13 +40,13 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 INSTALLED_APPS = [
+    "blog",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "blog",
 ]
 
 MIDDLEWARE = [
@@ -101,9 +101,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
+    # Removed CommonPasswordValidator to hide the 'commonly used password' message
     {
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
