@@ -36,6 +36,32 @@ Frontend & UI:
 • Custom CSS themes for posts, comments, and header components.
 • Dynamic hero sections with blurred background images.
 
+## New Features
+
+Password Reset via Email:
+• Users can reset their password using a secure email link.
+• Custom email templates for password reset are in `blog/templates/registration/`.
+• The password reset flow uses Django's built-in views and supports custom branding.
+
+Sendgrid Integration:
+• Outgoing emails (including password reset) are sent via SendGrid SMTP.
+• The SendGrid API key and default sender are stored securely in a `.env` file.
+• To use SendGrid, set these in your `.env`:
+  ```
+  SENDGRID_API_KEY=your_sendgrid_api_key
+  DEFAULT_FROM_EMAIL=your_verified_sendgrid_email
+  ```
+
+  Environment Variables & Secrets:
+- All sensitive settings (secret key, email credentials) are loaded from `.env` using `python-dotenv`.
+- Example `.env`:
+  ```
+  DJANGO_SECRET_KEY=your_secret_key
+  SENDGRID_API_KEY=your_sendgrid_api_key
+  DEFAULT_FROM_EMAIL=your_verified_sendgrid_email
+  ```
+- `.env` is included in `.gitignore` for security.
+
 ## Project Structure
 
 ```
@@ -46,6 +72,8 @@ Frontend & UI:
 │   ├── templates/
 │   │   ├── blog/
 │   │   └── registration/
+|   |       ├── login.html
+|   |       ├── password_reset_form.html
 │   ├── __init__.py
 │   ├── admin.py
 │   ├── apps.py
@@ -119,7 +147,36 @@ Frontend & UI:
 - **Templates:** Modify HTML in `blog/templates/` for layout changes.
 - **Settings:** Update `mysite/settings.py` for project configuration.
 
+## Additional Requirements
 
+- python-decouple==3.8
+
+Make sure your `requirements.txt` includes:
+
+```
+Django~=5.1.2
+django-ckeditor==6.7.3
+django-js-asset==3.1.2
+pillow==12.0.0
+python-decouple==3.8
+python-dotenv==1.2.1
+sqlparse==0.5.3
+tzdata==2025.2
+```
+
+## Updated Setup Instructions
+
+- After cloning the repo and activating your virtual environment, install all dependencies:
+  ```sh
+  pip install -r requirements.txt
+  ```
+- The project uses `python-decouple` and `python-dotenv` to securely load environment variables from a `.env` file.
+- Your `.env` file should include:
+  ```
+  DJANGO_SECRET_KEY=your_secret_key
+  SENDGRID_API_KEY=your_sendgrid_api_key
+  DEFAULT_FROM_EMAIL=your_verified_sendgrid_email
+  ```
 
 ## Deploying to PythonAnywhere
 
